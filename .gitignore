@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+app/styles/tailwind.css
+/.cache
+/.mf
+/build
+dist
+/public/build
+.env

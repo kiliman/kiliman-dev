@@ -1,0 +1,28 @@
+name = "kiliman-dev"
+type = "javascript"
+compatibility_date = "2021-12-06"
+
+zone_id = ""
+account_id = "ffc27d2c4ab35f6e6f2dc63e87cd82d3"
+route = ""
+workers_dev = true
+
+kv_namespaces = [
+  { binding = "SESSION", id = "80d5f4694dc04e74a9725a76d42f2ca3" },
+  { binding = "REDIRECT", id = "fa27a5210b3845409c039a9669d62f74" },
+  { binding = "BLOG_CONTENT", id = "8f418a0b8d764731b3bc233bcd2f5419" }
+]
+
+[site]
+bucket = "./public"
+entry-point = "."
+
+[build]
+command = "npm run build:worker"
+watch_dir = "build/index.js"
+
+[build.upload]
+format="service-worker"
+
+[miniflare]
+kv_persist = true
