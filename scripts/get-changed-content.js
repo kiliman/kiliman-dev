@@ -15,7 +15,7 @@ async function go() {
   const contentFiles = changedFiles
     .filter(({ filename }) => filename.startsWith('content'))
     .map(({ filename }) =>
-      filname.split('/').length > 3
+      filename.split('/').length > 3
         ? filename.split('/').slice(0, 3).join('/')
         : filename,
     )
