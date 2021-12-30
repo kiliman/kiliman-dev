@@ -61,7 +61,14 @@ jobs:
         run: cd ./scripts/mdx && npm install
 
       - name: 🚀 Compile and post MDX
-        run: cd ./scripts/mdx && npx esbuild ./compile-mdx.ts --platform=node --target=node16 --outfile=dist/compile-mdx.js && node ./dist/compile-mdx.js ../../ ${{steps.changes.outputs.CONTENT}}
+        run: cd ./scripts/mdx && npx esbuild ./compile-mdx.ts --platform=node --target=node16 --outfile=dist/compile-mdx.js && node ./dist/compile-mdx.js ../../ ${{needs.changes.outputs.CONTENT}}
         env:
-          POST_API_URL: ${{ secrets.POST_API_URL }}
+          API_URL: ${{ secrets.API_URL }}
+          POST_API_KEY: ${{ secrets.POST_API_KEY }}
+
+      - name: 🚀 Update content sha
+        run: cd ./scripts/mdx && node ./update-content-sha.js
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          API_URL: ${{ secrets.API_URL }}
           POST_API_KEY: ${{ secrets.POST_API_KEY }}

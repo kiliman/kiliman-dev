@@ -11,8 +11,8 @@ import rehypeHighlight from 'rehype-highlight'
 ;(async function () {
   config()
   const [basePath, ...mdxPaths] = process.argv.slice(2)
-  if (!process.env.POST_API_URL) {
-    console.error('missing POST_API_URL')
+  if (!process.env.API_URL) {
+    console.error('missing API_URL')
     process.exit(1)
   }
   const results = {}
@@ -57,7 +57,7 @@ import rehypeHighlight from 'rehype-highlight'
     const html = renderToString(React.createElement(Component))
     const hasComponents = Object.keys(files).length > 0
 
-    const response = await fetch(process.env.POST_API_URL, {
+    const response = await fetch(`${process.env.API_URL}/post-content`, {
       method: 'post',
       body: JSON.stringify({
         slug,
