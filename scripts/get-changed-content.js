@@ -4,7 +4,8 @@ const [currentCommitSha] = process.argv.slice(2)
 async function go() {
   const buildInfo = await fetchJson('https://kiliman.dev/build/info.json')
   const compareCommitSha = buildInfo.commit.sha
-  const changedFiles = await getChangedFiles(currentCommitSha, compareCommitSha)
+  const changedFiles =
+    (await getChangedFiles(currentCommitSha, compareCommitSha)) ?? []
   console.error('Determining whether the changed files are content', {
     currentCommitSha,
     compareCommitSha,
@@ -24,5 +25,5 @@ async function go() {
 
 go().catch(e => {
   console.error(e)
-  console.log('true')
+  console.log('')
 })
