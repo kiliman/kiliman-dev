@@ -19,6 +19,7 @@ import rehypeHighlight from 'rehype-highlight'
   let hasError = false
   for (let mdxPath of mdxPaths) {
     mdxPath = path.join(basePath, mdxPath)
+    const contentPath = /content\/(\w+)\//.exec(mdxPath)[1]
     const slug = path.basename(mdxPath, '.mdx')
     let mdxSource = ''
     let files = {}
@@ -60,7 +61,7 @@ import rehypeHighlight from 'rehype-highlight'
     const response = await fetch(`${process.env.API_URL}/post-content`, {
       method: 'post',
       body: JSON.stringify({
-        slug,
+        slug: `${contentPath}/${slug}`,
         frontmatter,
         html,
         code: hasComponents ? code : undefined,

@@ -9,7 +9,7 @@ import { getMDXComponent } from '~/utils/mdx.client'
 import customCodeCss from '~/styles/custom-code.css'
 import { siteTitle } from '~/utils/constants'
 
-declare var BLOG_CONTENT: KVNamespace
+declare var CONTENT: KVNamespace
 
 export const links: LinksFunction = () => [
   {
@@ -32,7 +32,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (slug === undefined) {
     throw new Response('Not Found', { status: 404 })
   }
-  const data = await BLOG_CONTENT.get(slug, 'json')
+  const data = await CONTENT.get(`blog/${slug}`, 'json')
   if (data === undefined) {
     throw new Response('Not Found', { status: 404 })
   }

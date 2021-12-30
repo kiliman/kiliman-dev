@@ -1,8 +1,8 @@
 import { json, LoaderFunction } from 'remix'
-declare var BLOG_CONTENT: KVNamespace
+declare var CONTENT: KVNamespace
 
 export const loader: LoaderFunction = async () => {
-  const data = (await BLOG_CONTENT.get('$$content-sha', 'json')) || {
+  const data = (await CONTENT.get('$$content-sha', 'json')) || {
     commit: { sha: '' },
   }
   return json(data)

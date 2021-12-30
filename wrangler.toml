@@ -10,7 +10,7 @@ workers_dev = true
 kv_namespaces = [
   { binding = "SESSION", id = "80d5f4694dc04e74a9725a76d42f2ca3" },
   { binding = "REDIRECT", id = "fa27a5210b3845409c039a9669d62f74" },
-  { binding = "BLOG_CONTENT", id = "8f418a0b8d764731b3bc233bcd2f5419" }
+  { binding = "CONTENT", id = "34dfc5454fe94b5c8ecdbb3a2d7f9cf2" }
 ]
 
 [site]
