@@ -139,10 +139,10 @@ function Layout({ children }: { children: React.ReactNode }) {
                 <NavLink to="/">Home</NavLink>
               </li>
               <li>
-                <NavLink to="/blog">Blog</NavLink>
+                <NavLink to="/blog/">Blog</NavLink>
               </li>
               <li>
-                <NavLink to="/projects">Projects</NavLink>
+                <NavLink to="/projects/">Projects</NavLink>
               </li>
               <li>
                 <NavLink to="/about">About</NavLink>

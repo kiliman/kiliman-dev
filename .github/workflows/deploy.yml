@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       DEPLOYABLE: ${{steps.changes.outputs.DEPLOYABLE}}
+      CONTENT: ${{steps.changes.outputs.CONTENT}}
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v2
@@ -32,12 +33,26 @@ jobs:
         run: >-
           echo "DEPLOYABLE: ${{steps.changes.outputs.DEPLOYABLE}}"
 
+      - name: 🔎 Determine content changes
+        id: changes
+        run: >-
+          echo ::set-output name=CONTENT::$(node ./scripts/get-changed-content.js ${{
+          github.sha }})
+
+      - name: ❓ Content
+        run: >-
+          echo "CONTENT: ${{steps.changes.outputs.CONTENT}}"
+
+
   deploy:
     name: Deploy
     needs: [changes]
     if: needs.changes.outputs.DEPLOYABLE == 'true'
     runs-on: ubuntu-latest
     steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v2
 
@@ -68,3 +83,47 @@ jobs:
         uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
+
+  compile:
+    name: 🛠 Compile MDX
+    if: needs.changes.outputs.CONTENT != ''
+    needs: [changes]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '50'
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: 🥶 Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-
+            ${{ runner.OS }}-
+
+      - name: 📦 Install npm packages
+        run: cd ./scripts/mdx && npm install
+
+      - name: 🚀 Compile and post MDX
+        run: cd ./scripts/mdx && npx esbuild ./compile-mdx.ts --platform=node --target=node16 --outfile=dist/compile-mdx.js && node ./dist/compile-mdx.js ../../ ${{needs.changes.outputs.CONTENT}}
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          POST_API_KEY: ${{ secrets.POST_API_KEY }}
+
+      - name: 🚀 Update content sha
+        run: cd ./scripts/mdx && node ./update-content-sha.js
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          API_URL: ${{ secrets.API_URL }}
+          POST_API_KEY: ${{ secrets.POST_API_KEY }}
