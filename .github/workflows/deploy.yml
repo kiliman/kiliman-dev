@@ -10,8 +10,8 @@ jobs:
     name: 🔎 Determine deployable changes
     runs-on: ubuntu-latest
     outputs:
-      DEPLOYABLE: ${{steps.changes.outputs.DEPLOYABLE}}
-      CONTENT: ${{steps.changes.outputs.CONTENT}}
+      DEPLOYABLE: ${{steps.deploy_changes.outputs.DEPLOYABLE}}
+      CONTENT: ${{steps.content_changes.outputs.CONTENT}}
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v2
@@ -24,24 +24,24 @@ jobs:
           node-version: 16
 
       - name: 🔎 Determine deployable changes
-        id: changes
+        id: deploy_changes
         run: >-
           echo ::set-output name=DEPLOYABLE::$(node ./scripts/is-deployable.js ${{
           github.sha }})
 
       - name: ❓ Deployable
         run: >-
-          echo "DEPLOYABLE: ${{steps.changes.outputs.DEPLOYABLE}}"
+          echo "DEPLOYABLE: ${{steps.deploy_changes.outputs.DEPLOYABLE}}"
 
       - name: 🔎 Determine content changes
-        id: changes
+        id: content_changes
         run: >-
           echo ::set-output name=CONTENT::$(node ./scripts/get-changed-content.js ${{
           github.sha }})
 
       - name: ❓ Content
         run: >-
-          echo "CONTENT: ${{steps.changes.outputs.CONTENT}}"
+          echo "CONTENT: ${{steps.content_changes.outputs.CONTENT}}"
 
 
   deploy:
