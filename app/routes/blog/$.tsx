@@ -1,4 +1,5 @@
 import {
+  HeadersFunction,
   json,
   LinksFunction,
   LoaderFunction,
@@ -26,8 +27,12 @@ type BlogContentType = {
   frontmatter: { [key: string]: any }
   html: string
   code?: string
+  hash?: string
 }
-export const loader: LoaderFunction = async ({ params }) => {
+
+export const headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders
+
+export const loader: LoaderFunction = async ({ request, params }) => {
   const slug = params['*']
   if (slug === undefined) {
     throw new Response('Not Found', { status: 404 })
@@ -36,13 +41,27 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (data === undefined) {
     throw new Response('Not Found', { status: 404 })
   }
-  const { frontmatter, html, code } = data as BlogContentType
-  return json({
-    slug,
-    frontmatter,
-    html,
-    code,
-  })
+  const { frontmatter, html, code, hash } = data as BlogContentType
+
+  const etag = request.headers.get('If-None-Match')
+  if (etag === hash) {
+    return new Response('Not Modified', { status: 304 })
+  }
+
+  const headers = new Headers()
+  if (hash) {
+    headers.append('etag', hash)
+  }
+
+  return json(
+    {
+      slug,
+      frontmatter,
+      html,
+      code,
+    },
+    { headers },
+  )
 }
 export let meta: MetaFunction = ({ data }) => {
   let title = siteTitle
