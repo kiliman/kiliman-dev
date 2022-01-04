@@ -55,10 +55,9 @@ async function main() {
       }
 
       console.log(`compling ${path}`)
-      // const results = await doCompile(path)
-      // const { hash } = results[path]
-      // console.log(results)
-      let hash = ''
+      const results = await doCompile(path)
+      const { hash } = results[path]
+      console.log(results)
       updateCache(cache, path, {
         series,
         lastModified,
