@@ -4,12 +4,13 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "compile": "esbuild ./compile-mdx.ts --platform=node --target=node16 --outfile=dist/compile-mdx.js && node ./dist/compile-mdx.js ../../"
+    "compile": "node ./compile-mdx.mjs --root ../../ --json --file"
   },
   "keywords": [],
   "author": "Michael J. Carter <kiliman@gmail.com> (https://kiliman.dev/)",
   "license": "MIT",
   "dependencies": {
+    "commander": "^8.3.0",
     "dotenv": "^10.0.0",
     "esbuild": "^0.14.8",
     "esbuild-runner": "^2.2.1",

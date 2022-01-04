@@ -21,22 +21,38 @@ async function go() {
     })
   } else {
     // get initial content list
-    const files = await fsp.readdir(path.join(process.cwd(), './content/blog/'))
-    changedFiles = files.map(filename => ({
+    const filelist = []
+    function walk(dir) {
+      const files = fs.readdirSync(dir)
+      files.forEach(file => {
+        const filePath = path.join(dir, file)
+        if (fs.statSync(filePath).isDirectory()) {
+          walk(filePath)
+        } else {
+          filelist.push(filePath)
+        }
+      })
+    }
+    walk('./content')
+    changedFiles = filelist.map(filename => ({
       changeType: 'added',
-      filename: `content/blog/${filename}`,
+      filename,
     }))
   }
-
   // get list of files that are content
   const contentFiles = changedFiles
-    .filter(({ filename }) => filename.startsWith('content/blog/'))
-    .map(({ filename }) =>
-      filename.split('/').length > 3
-        ? filename.split('/').slice(0, 3).join('/')
-        : filename,
-    )
-  console.log(Array.from(new Set(contentFiles)).join(' '))
+    .filter(({ filename }) => filename.startsWith('content/'))
+    .map(({ filename }) => {
+      const parts = filename.split('/')
+
+      if (parts.length < 3) return null
+      if (filename.endsWith('/_series.mdx')) return null
+      if (!filename.endsWith('.mdx') || filename.endsWith('/index.mdx')) {
+        return parts.slice(0, parts.length - 1).join('/')
+      }
+      return filename
+    })
+  console.log(Array.from(new Set(contentFiles)).filter(Boolean).join(' '))
 }
 
 go().catch(e => {
