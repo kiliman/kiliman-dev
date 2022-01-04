@@ -28,7 +28,7 @@ type BlogContentType = {
   code?: string
 }
 export const loader: LoaderFunction = async ({ params }) => {
-  const { slug } = params
+  const slug = params['*']
   if (slug === undefined) {
     throw new Response('Not Found', { status: 404 })
   }
