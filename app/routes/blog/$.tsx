@@ -42,9 +42,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw new Response('Not Found', { status: 404 })
   }
   const { frontmatter, html, code, hash } = data as BlogContentType
-
+  const weakHash = `W/"${hash}"`
   const etag = request.headers.get('If-None-Match')
-  if (etag === hash) {
+  if (etag === weakHash) {
     return new Response('Not Modified', { status: 304 })
   }
 
@@ -59,8 +59,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       headers: {
         // use weak etag because Cloudflare only supports
         // srong etag on Enterprise plans :(
-        ETag: `W/"${hash}"`,
-        'Cache-Control': 's-maxage=60, stale-while-revalidate',
+        ETag: weakHash,
+        // add cache control and status for cloudflare?
+        'Cache-Control': 'maxage=1, s-maxage=60, stale-while-revalidate',
+        'CF-Cache-Status': 'MISS',
         'x-remix': 'test',
       },
     },
