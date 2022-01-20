@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const weakHash = `W/"${hash}"`
   const etag = request.headers.get('If-None-Match')
   if (etag === weakHash) {
-    return new Response('Not Modified', { status: 304 })
+    return new Response(null, { status: 304 })
   }
 
   return json(
