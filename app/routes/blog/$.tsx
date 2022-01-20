@@ -48,11 +48,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return new Response('Not Modified', { status: 304 })
   }
 
-  const headers = new Headers()
-  if (hash) {
-    headers.append('etag', hash)
-  }
-
   return json(
     {
       slug,
@@ -60,7 +55,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       html,
       code,
     },
-    { headers },
+    {
+      headers: {
+        // use weak etag because Cloudflare only supports
+        // srong etag on Enterprise plans :(
+        ETag: `W/"${hash}"`,
+      },
+    },
   )
 }
 export let meta: MetaFunction = ({ data }) => {
