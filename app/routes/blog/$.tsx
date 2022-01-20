@@ -60,6 +60,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         // use weak etag because Cloudflare only supports
         // srong etag on Enterprise plans :(
         ETag: `W/"${hash}"`,
+        'x-remix': 'test',
       },
     },
   )
