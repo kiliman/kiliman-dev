@@ -62,7 +62,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         ETag: weakHash,
         // add cache control and status for cloudflare?
         'Cache-Control': 'maxage=1, s-maxage=60, stale-while-revalidate',
-        'CF-Cache-Status': 'MISS',
+        //'CF-Cache-Status': 'MISS',
         'x-remix': 'test',
       },
     },
