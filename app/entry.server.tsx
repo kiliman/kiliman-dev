@@ -14,7 +14,7 @@ export default function handleRequest(
 
   const url = new URL(request.url)
   if (url.pathname === '/blog/test') {
-    responseHeaders.set('Content-Type', 'application/json')
+    responseHeaders.delete('Content-Type')
 
     return new Response(JSON.stringify(remixContext.routeData), {
       status: responseStatusCode,
