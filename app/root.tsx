@@ -2,6 +2,7 @@ import {
   Link,
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   MetaFunction,
   NavLink as RemixNavLink,
@@ -9,6 +10,7 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch,
+  json,
 } from 'remix'
 import type { LinksFunction } from 'remix'
 import clsx from 'clsx'
@@ -27,6 +29,11 @@ export const links: LinksFunction = () => {
 export const meta: MetaFunction = () => ({
   title: siteTitle,
 })
+
+export const loader: LoaderFunction = () =>
+  json({
+    title: siteTitle,
+  })
 
 export default function App() {
   return (
