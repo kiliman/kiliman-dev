@@ -54,6 +54,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>
+          <pre>{error.stack}</pre>
           <hr />
           <p>
             Hey, developer, you should replace this with what you want your
