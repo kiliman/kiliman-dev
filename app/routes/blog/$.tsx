@@ -9,6 +9,7 @@ import {
 import { getMDXComponent } from '~/utils/mdx.client'
 import customCodeCss from '~/styles/custom-code.css'
 import { siteTitle } from '~/utils/constants'
+import { useEffect } from 'react'
 
 declare var CONTENT: KVNamespace
 
@@ -82,6 +83,14 @@ export let meta: MetaFunction = ({ data }) => {
 }
 export default function Post() {
   const { html, frontmatter, code } = useLoaderData()
+
+  useEffect(() => {
+    const div = document.createElement('div')
+    div.innerHTML = html
+    const paragraphs = div.querySelectorAll('p')
+    console.log('paragraphs', paragraphs.length)
+  }, [])
+
   let Component = null
   if (typeof window !== 'undefined' && code) {
     Component = getMDXComponent(code)
