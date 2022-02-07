@@ -128,7 +128,8 @@ import { Command } from 'commander/esm.mjs'
           if (response.ok) {
             series = await response.json()
             series = frontmatter
-            series.slug = seriesRoot
+            series.slug = `${seriesRoot}/series`
+            series.sequence = getSeriesPostNumber(series.frontmatter.posts, slug)
             seriesMap.set(seriesRoot, series)
           } else {
             // series not found, so reprocess this file after the series is created
@@ -186,3 +187,10 @@ import { Command } from 'commander/esm.mjs'
   }
   process.exit(hasError ? 1 : 0)
 })()
+
+function getSeriesPostNumber(posts, slug) {
+  // get last segment of slug
+  const parts = slug.split('/')
+  const last = parts[parts.length - 1]
+  return posts.indexOf(last) + 1
+}
