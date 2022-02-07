@@ -44,7 +44,7 @@ import { Command } from 'commander/esm.mjs'
       }
 
       console.error(`Compiling ${mdxPath}...`)
-      const fullPath = path.join(rootPath, mdxPath)
+      let fullPath = path.join(rootPath, mdxPath)
 
       const parts = mdxPath.split('/')
       const slug = parts.slice(1).join('/').replace('.mdx', '')
