@@ -6,7 +6,7 @@ export default function HeroImage({ frontmatter }: any) {
         <div className="w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw]">
           <img
             src={frontmatter.image.url}
-            className="object-cover object-center w-full h-48 sm:h-96"
+            className="object-cover object-center w-full h-48 sm:h-96 xl:h-[32rem]"
           />
         </div>
         <p className="mt-2 text-sm text-slate-600">
