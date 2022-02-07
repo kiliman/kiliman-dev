@@ -69,12 +69,13 @@ export default function Index() {
             <ListItem key={slug}>
               <Link to={`/${slug}`}>{frontmatter.title}</Link>
               <p className="mt-1 text-sm text-slate-300 line-clamp-2">
-              {frontmatter.description}
-            </p>
-          </ListItem>
-        ))}
-      </ul>
-    </>
+                {frontmatter.description}
+              </p>
+            </ListItem>
+          ))}
+        </ul>
+      </div>
+    </div>
   )
 }
 
@@ -87,4 +88,11 @@ function Link({ to, children }: any) {
       {children}
     </RemixLink>
   )
+}
+
+function getSeriesPostNumber(posts: string[], slug: string) {
+  // get last segment of slug
+  const parts = slug.split('/')
+  const last = parts[parts.length - 1]
+  return posts.indexOf(last) + 1
 }
