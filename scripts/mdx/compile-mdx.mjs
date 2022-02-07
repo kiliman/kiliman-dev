@@ -128,6 +128,7 @@ import { Command } from 'commander/esm.mjs'
           if (response.ok) {
             series = await response.json()
             series = frontmatter
+            series.slug = seriesRoot
             seriesMap.set(seriesRoot, series)
           } else {
             // series not found, so reprocess this file after the series is created
