@@ -74,7 +74,6 @@ import { Command } from 'commander/esm.mjs'
       const cwd = Object.keys(files).length
         ? path.join(rootPath, mdxPath)
         : undefined
-      console.error(`compiling ${mdxPath} with cwd ${cwd}`)
       const { frontmatter, code } = await bundleMDX({
         source: mdxSource,
         files,
@@ -129,7 +128,7 @@ import { Command } from 'commander/esm.mjs'
             series = await response.json()
             series = frontmatter
             series.slug = `${seriesRoot}/series`
-            series.sequence = getSeriesPostNumber(series.frontmatter.posts, slug)
+            series.sequence = getSeriesPostNumber(series.posts, slug)
             seriesMap.set(seriesRoot, series)
           } else {
             // series not found, so reprocess this file after the series is created
