@@ -1,6 +1,4 @@
 import { createEventHandler } from '@remix-run/cloudflare-workers'
-import { redirectHandler } from './redirect'
-
 import * as build from '../build'
 
 const handler = createEventHandler({ build })
