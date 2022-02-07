@@ -13,7 +13,7 @@
     "start": "miniflare --build-command \"npm run dev:worker\" --watch",
     "css:build": "tailwindcss -i styles/tailwind.css -o app/styles/tailwind.css --minify",
     "css:watch": "tailwindcss -i styles/tailwind.css -o app/styles/tailwind.css --watch",
-    "content:watch": "node ./scripts/watch-content.js",
+    "content:watch": "dotenv -e scripts/mdx/.env -- node scripts/watch-content.js --force",
     "debug": "miniflare --inspect --build-command \"npm run dev:worker\" --watch",
     "deploy": "npm run build && wrangler publish",
     "act": "act compile-mdx -j compile --secret-file .env"
@@ -40,6 +40,7 @@
     "@types/react-dom": "^17.0.9",
     "chokidar": "^3.5.2",
     "cssnano": "^5.0.14",
+    "dotenv-cli": "^4.1.1",
     "esbuild": "0.13.14",
     "esbuild-runner": "^2.2.1",
     "miniflare": "2.0.0-next.3",
@@ -47,8 +48,9 @@
     "patch-package": "^6.4.7",
     "pm2": "^5.1.2",
     "prettier": "^2.5.1",
-    "tailwindcss": "^3.0.7",
-    "typescript": "^4.1.2"
+    "tailwindcss": "^3.0.10",
+    "typescript": "^4.1.2",
+    "ws": "^8.4.0"
   },
   "engines": {
     "node": ">=14"
