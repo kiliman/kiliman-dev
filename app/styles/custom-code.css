@@ -5,3 +5,11 @@ code {
 .hljs-comment {
   font-style: italic;
 }
+.hljs {
+  background-color: transparent;
+}
+
+pre {
+  margin-left: -24px;
+  margin-right: -24px;
+}
