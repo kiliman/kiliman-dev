@@ -125,10 +125,12 @@ import { Command } from 'commander/esm.mjs'
             `${process.env.API_URL}/get-content/${seriesRoot}/series`,
           )
           if (response.ok) {
-            series = await response.json()
-            series = frontmatter
-            series.slug = `${seriesRoot}/series`
-            series.sequence = getSeriesPostNumber(series.posts, slug)
+            const { frontmatter } = await response.json()
+            series = {
+              slug: frontmatter.slug,
+              title: frontmatter.title,
+              sequence: getSeriesPostNumber(frontmater.posts, slug),
+            }
             seriesMap.set(seriesRoot, series)
           } else {
             // series not found, so reprocess this file after the series is created
