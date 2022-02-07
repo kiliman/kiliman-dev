@@ -1,28 +1,35 @@
+import { useEffect, useRef, useState } from 'react'
 import {
   Link,
   Links,
   LiveReload,
   LoaderFunction,
+  LinksFunction,
   Meta,
   MetaFunction,
-  NavLink as RemixNavLink,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
   json,
+  useTransition,
 } from 'remix'
-import type { LinksFunction } from 'remix'
 import clsx from 'clsx'
+import { Disclosure, Menu, Transition } from '@headlessui/react'
+import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import NProgress from 'nprogress'
 import { siteTitle } from '~/utils/constants'
 
 import globalCss from '~/styles/global.css'
 import tailwindCss from '~/styles/tailwind.css'
+import nprogressCss from '~/styles/nprogress.css'
 
 export const links: LinksFunction = () => {
   return [
     { rel: 'stylesheet', href: globalCss },
     { rel: 'stylesheet', href: tailwindCss },
+    { rel: 'stylesheet', href: nprogressCss },
   ]
 }
 
@@ -36,6 +43,16 @@ export const loader: LoaderFunction = () =>
   })
 
 export default function App() {
+  let transition = useTransition()
+  useEffect(() => {
+    NProgress.configure({ showSpinner: false })
+    if (transition.state === 'idle') {
+      NProgress.done()
+    } else {
+      NProgress.start()
+    }
+  }, [transition.state])
+
   return (
     <Document>
       <Layout>
@@ -124,11 +141,13 @@ function Document({
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
         {/* Cloudflare Web Analytics */}
-        <script
-          defer
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon='{"token": "cf7ec1461d994872b4a5463f0a1b336b"}'
-        ></script>
+        {process.env.NODE_ENV === 'production' && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon='{"token": "cf7ec1461d994872b4a5463f0a1b336b"}'
+          ></script>
+        )}
       </body>
     </html>
   )
@@ -137,36 +156,11 @@ function Document({
 function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="px-12 py-6 border-b border-slate-600">
-        <div className="flex items-center justify-between">
-          <Link
-            to="/"
-            title={siteTitle}
-            className="flex items-center gap-4 text-white"
-          >
-            <Logo />
-            <h1 className="text-2xl font-bold">{siteTitle}</h1>
-          </Link>
-          <nav aria-label="Main navigation">
-            <ul className="flex items-center gap-6 m-0">
-              <li>
-                <NavLink to="/">Home</NavLink>
-              </li>
-              <li>
-                <NavLink to="/blog/">Blog</NavLink>
-              </li>
-              <li>
-                <NavLink to="/projects/">Projects</NavLink>
-              </li>
-              <li>
-                <NavLink to="/about">About</NavLink>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
+      <Header />
       <div className="flex-1">
-        <div className="w-full px-12 py-6">{children}</div>
+        <div className="container p-4 m-auto sm:px-12 sm:py-6 lg:max-w-screen-lg">
+          {children}
+        </div>
       </div>
       <footer className="px-12 py-6 border-t border-slate-600">
         <div className="flex items-center justify-center w-full gap-4">
@@ -192,29 +186,199 @@ function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-function NavLink({ to, children }: any) {
+const navigation = [
+  { name: 'Home', href: '/' },
+  { name: 'Blog', href: '/blog/' },
+  { name: 'Projects', href: '/projects/' },
+  { name: 'About', href: '/about' },
+]
+
+export function Header() {
+  const closer = useRef<any>(null)
+  const transtition = useTransition()
+  // hook to close the mobile menu after the transition goes to idle
+  useEffect(() => {
+    if (transtition.state === 'idle') {
+      if (closer.current) closer.current()
+      closer.current = null
+    }
+  }, [transtition.state])
+
   return (
-    <RemixNavLink
-      to={to}
-      className={({ isActive }) =>
-        clsx(
-          'text-white hover:text-slate-300 px-2 py-1 rounded-sm',
-          isActive && 'bg-slate-600',
-        )
-      }
-    >
-      {children}
-    </RemixNavLink>
+    <Disclosure as="nav" className="border-b bg-slate-900 border-slate-600">
+      {({ open }) => (
+        <>
+          <div className="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div className="relative flex items-center justify-between h-16">
+              <div className="absolute inset-y-0 left-0 flex items-center md:hidden">
+                {/* Mobile menu button*/}
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                  <span className="sr-only">Open main menu</span>
+                  {open ? (
+                    <XIcon className="block w-6 h-6" aria-hidden="true" />
+                  ) : (
+                    <MenuIcon className="block w-6 h-6" aria-hidden="true" />
+                  )}
+                </Disclosure.Button>
+              </div>
+              <div className="flex items-center justify-start flex-1 ml-16 md:ml-0 md:items-stretch">
+                <div className="flex items-center flex-shrink-0">
+                  <Link
+                    to="/"
+                    title={siteTitle}
+                    className="flex items-center gap-4 text-white"
+                  >
+                    <Logo className="h-6 sm:h-8" />
+                    <h1 className="font-bold text-md sm:text-2xl">
+                      {siteTitle}
+                    </h1>
+                  </Link>
+                </div>
+                <div className="hidden md:block md:ml-6">
+                  <div className="flex space-x-4">
+                    {navigation.map(item => (
+                      //@ts-expect-error doesn't like aria-current isActive
+                      <NavLink
+                        key={item.name}
+                        to={item.href}
+                        prefetch="intent"
+                        className={({ isActive }) =>
+                          clsx(
+                            isActive
+                              ? 'bg-slate-500 text-white'
+                              : 'text-slate-300 hover:text-slate-600',
+                            'px-3 py-2 rounded-md text-sm font-medium  hover:bg-slate-400',
+                          )
+                        }
+                        aria-current={({ isActive }: { isActive: boolean }) =>
+                          isActive ? 'page' : undefined
+                        }
+                      >
+                        {item.name}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <button
+                  type="button"
+                  className="p-1 rounded-full text-slate-400 bg-slate-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-white"
+                >
+                  <span className="sr-only">View notifications</span>
+                  <BellIcon className="w-6 h-6" aria-hidden="true" />
+                </button>
+
+                <Menu as="div" className="relative ml-3">
+                  <div>
+                    <Menu.Button className="flex text-sm rounded-full bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-white">
+                      <span className="sr-only">Open user menu</span>
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        alt=""
+                      />
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/profile"
+                            className={clsx([
+                              active ? 'bg-slate-100' : '',
+                              'block px-4 py-2 text-sm text-slate-700',
+                            ])}
+                          >
+                            Your Profile
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/settings"
+                            className={clsx([
+                              active ? 'bg-slate-100' : '',
+                              'block px-4 py-2 text-sm text-slate-700',
+                            ])}
+                          >
+                            Settings
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/logout"
+                            className={clsx([
+                              active ? 'bg-slate-100' : '',
+                              'block px-4 py-2 text-sm text-slate-700',
+                            ])}
+                          >
+                            Sign out
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </div> */}
+            </div>
+          </div>
+
+          <Disclosure.Panel className="md:hidden">
+            {({ close }) => (
+              <div className="flex flex-col gap-2 px-2 pt-2 pb-3">
+                {navigation.map(item => (
+                  //@ts-expect-error doesn't like aria-current isActive
+                  <NavLink
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => {
+                      closer.current = close
+                    }}
+                    prefetch="intent"
+                    className={({ isActive }) =>
+                      clsx([
+                        isActive
+                          ? 'bg-slate-500 text-white'
+                          : 'text-slate-300 hover:text-slate-600',
+                        'px-3 py-2 rounded-md text-sm font-medium  hover:bg-slate-400',
+                      ])
+                    }
+                    aria-current={({ isActive }: { isActive: boolean }) =>
+                      isActive ? 'page' : undefined
+                    }
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+              </div>
+            )}
+          </Disclosure.Panel>
+        </>
+      )}
+    </Disclosure>
   )
 }
 
-function Logo() {
+function Logo({ className }: any) {
   return (
     <svg
       viewBox="0 0 116.46 42.16"
       role="img"
-      width="106"
-      height="30"
+      className={className}
       fill="currentColor"
     >
       <title id="title">{siteTitle}</title>

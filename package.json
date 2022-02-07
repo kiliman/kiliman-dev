@@ -19,10 +19,13 @@
     "act": "act compile-mdx -j compile --secret-file .env"
   },
   "dependencies": {
+    "@headlessui/react": "^1.4.3",
+    "@heroicons/react": "^1.0.5",
     "@remix-run/cloudflare-workers": "^1.1.1",
     "@remix-run/react": "^1.1.1",
     "clsx": "^1.1.1",
     "mdx-bundler": "^8.0.1",
+    "nprogress": "^0.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "remix": "^1.1.1",
@@ -32,6 +35,7 @@
     "@cloudflare/workers-types": "^2.2.2",
     "@remix-run/dev": "^1.1.1",
     "@tailwindcss/typography": "^0.5.0",
+    "@types/nprogress": "^0.2.0",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
     "chokidar": "^3.5.2",
