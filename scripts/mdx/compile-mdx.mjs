@@ -129,7 +129,7 @@ import { Command } from 'commander/esm.mjs'
             series = {
               slug: frontmatter.slug,
               title: frontmatter.title,
-              sequence: getSeriesPostNumber(frontmater.posts, slug),
+              sequence: getSeriesPostNumber(frontmatter.posts, slug),
             }
             seriesMap.set(seriesRoot, series)
           } else {
