@@ -125,13 +125,7 @@ import { Command } from 'commander/esm.mjs'
             `${process.env.API_URL}/get-content/${seriesRoot}/series`,
           )
           if (response.ok) {
-            const { frontmatter } = await response.json()
-            series = {
-              slug: frontmatter.slug,
-              title: frontmatter.title,
-              sequence: getSeriesPostNumber(frontmatter.posts, slug),
-              length: frontmatter.posts.length,
-            }
+            series = await response.json()
             seriesMap.set(seriesRoot, series)
           } else {
             // series not found, so reprocess this file after the series is created
@@ -155,7 +149,14 @@ import { Command } from 'commander/esm.mjs'
           slug,
           hash,
           frontmatter,
-          series,
+          series: series
+            ? {
+                slug: series.slug,
+                title: series.title,
+                sequence: getSeriesPostNumber(series.posts, slug),
+                length: series.posts.length,
+              }
+            : undefined,
           html,
           code: hasComponents ? code : undefined,
         }),
