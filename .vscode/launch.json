@@ -5,12 +5,35 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "name": "Launch Compiler",
+      "program": "${workspaceFolder}/scripts/mdx/compile-mdx.mjs",
+      "args": [
+        "--root",
+        "${workspaceFolder}",
+        "--file",
+        "content/blog/example"
+      ],
       "request": "launch",
-      "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/test.js",
-      "outFiles": ["${workspaceFolder}/**/*.js"]
+      "type": "node",
+      "envFile": "${workspaceFolder}/scripts/mdx/.env"
+    },
+    {
+      "name": "Launch Watcher",
+      "program": "${workspaceFolder}/scripts/watch-content.js",
+      "args": ["--force"],
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "envFile": "${workspaceFolder}/scripts/mdx/.env"
+    },
+    {
+      "name": "Launch Test",
+      "program": "${workspaceFolder}/scripts/mdx/test.mjs",
+      "args": [],
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
     },
     {
       "name": "Attach by Process ID",
