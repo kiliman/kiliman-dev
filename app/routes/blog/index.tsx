@@ -12,7 +12,7 @@ declare var CONTENT: KVNamespace
 export const headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders
 
 export const loader: LoaderFunction = async () => {
-  const slugs = await CONTENT.list({ prefix: 'blog/'})
+  const slugs = await CONTENT.list({ prefix: 'blog/' })
   const content = await Promise.all(
     slugs.keys.map(async ({ name }) => {
       const data = await CONTENT.get(name, 'json')
@@ -51,8 +51,7 @@ export default function Index() {
               {series && (
                 <p>
                   Series <Link to={`/${series.slug}`}>{series.title}</Link>{' '}
-                  (Post #{getSeriesPostNumber(series.posts, slug)} of{' '}
-                  {series.posts.length})
+                  (Post #{series.sequence} of {series.length})
                 </p>
               )}
             </ListItem>
@@ -62,7 +61,7 @@ export default function Index() {
       <div className="basis-1/3">
         <h1 className="text-3xl font-bold">Blog Series</h1>
         <ul className="mt-6">
-          {series.map(({ slug, frontmatter, series }: any) => (
+          {series.map(({ slug, frontmatter }: any) => (
             <ListItem key={slug}>
               <Link to={`/${slug}`}>{frontmatter.title}</Link>
               <p className="mt-1 text-sm text-slate-300 line-clamp-2">
