@@ -143,6 +143,7 @@ import { Command } from 'commander/esm.mjs'
         )
         .digest('hex')
 
+      console.error('series', JSON.stringify(series, null, 2))
       const response = await fetch(`${process.env.API_URL}/post-content`, {
         method: 'post',
         body: JSON.stringify({
