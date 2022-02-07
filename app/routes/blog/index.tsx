@@ -11,11 +11,8 @@ declare var CONTENT: KVNamespace
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders
 
-export const loader: LoaderFunction = async ({request}) => {
-  const url = new URL(request.url)
-  const cursor = url.searchParams.get('cursor') ?? undefined
-  const limit = Number(url.searchParams.get('limit') ?? 3)
-  const slugs = await CONTENT.list({ prefix: 'blog/', limit, cursor })
+export const loader: LoaderFunction = async () => {
+  const slugs = await CONTENT.list({ prefix: 'blog/'})
   const content = await Promise.all(
     slugs.keys.map(async ({ name }) => {
       const data = await CONTENT.get(name, 'json')
