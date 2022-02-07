@@ -84,7 +84,7 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 
       - name: 🚀 Update deploy sha
-        run: cd ./scripts/mdx && node ./update-deploy-sha.js
+        run: node ./scripts/mdx/update-deploy-sha.js
         env:
           COMMIT_SHA: ${{ github.sha }}
           API_URL: ${{ secrets.API_URL }}
@@ -122,7 +122,7 @@ jobs:
         run: cd ./scripts/mdx && npm install
 
       - name: 🚀 Compile and post MDX
-        run: cd ./scripts/mdx && node ./compile-mdx.mjs --root ../../ --json --file ${{needs.changes.outputs.CONTENT}}
+        run: cd && node ./scripts/mdx/compile-mdx.mjs --json --file ${{needs.changes.outputs.CONTENT}}
         env:
           API_URL: ${{ secrets.API_URL }}
           POST_API_KEY: ${{ secrets.POST_API_KEY }}
