@@ -3,6 +3,7 @@ node_modules
 app/styles/tailwind.css
 /.cache
 /content/.cache.json
+/app/.refresh.ignore
 /.mf
 /build
 dist
