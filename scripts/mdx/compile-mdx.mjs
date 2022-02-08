@@ -125,7 +125,9 @@ import { Command } from 'commander/esm.mjs'
             `${process.env.API_URL}/get-content/${seriesRoot}/series`,
           )
           if (response.ok) {
-            series = await response.json()
+            let { frontmatter } = await response.json()
+            frontmatter.slug = `${seriesRoot}/series`
+            series = frontmatter
             seriesMap.set(seriesRoot, series)
           } else {
             // series not found, so reprocess this file after the series is created
@@ -143,7 +145,6 @@ import { Command } from 'commander/esm.mjs'
         )
         .digest('hex')
 
-      console.error('series', JSON.stringify(series, null, 2))
       const response = await fetch(`${process.env.API_URL}/post-content`, {
         method: 'post',
         body: JSON.stringify({
