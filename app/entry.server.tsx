@@ -1,6 +1,6 @@
-import { RemixServer, useBeforeUnload } from 'remix'
 import { renderToString } from 'react-dom/server'
 import type { EntryContext } from 'remix'
+import { HandleDataRequestFunction, RemixServer } from 'remix'
 
 export default function handleRequest(
   request: Request,
@@ -20,9 +20,26 @@ export default function handleRequest(
   }
 
   responseHeaders.set('Content-Type', 'text/html')
+  addSecurityHeaders(responseHeaders)
 
   return new Response('<!DOCTYPE html>' + markup, {
     status: responseStatusCode,
     headers: responseHeaders,
   })
+}
+
+export const handleDataRequest: HandleDataRequestFunction = (
+  response: Response,
+) => {
+  addSecurityHeaders(response.headers)
+  return response
+}
+
+function addSecurityHeaders(responseHeaders: Headers) {
+  responseHeaders.set(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains',
+  )
+  responseHeaders.set('X-Frame-Options', 'SAMEORIGIN')
+  responseHeaders.set('X-Content-Type-Options', 'nosniff')
 }
