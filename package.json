@@ -5,7 +5,7 @@
   "license": "",
   "scripts": {
     "clean": "rm -rf dist build public/build",
-    "build": "npm run css:build && remix build --sourcemap && node ./scripts/generate-build-info.js",
+    "build": "node -v && npm run css:build && remix build --sourcemap && node ./scripts/generate-build-info.js",
     "dev": "npm run clean && pm2-dev ./pm2.config.js",
     "postinstall": "remix setup cloudflare-workers",
     "build:worker": "esbuild --define:process.env.NODE_ENV='\"production\"' --minify --bundle --sourcemap --outdir=dist ./worker",
