@@ -18,8 +18,7 @@ bucket = "./public"
 entry-point = "."
 
 [build]
-command = "npm run build:worker"
-watch_dir = "build/index.js"
+command = "echo 'The build was pre-executed.'"
 
 [build.upload]
 format="service-worker"
