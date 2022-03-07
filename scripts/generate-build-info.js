@@ -31,9 +31,13 @@ async function go() {
     buildTime: Date.now(),
     commit: await getCommit(),
   }
+  const buildPath = path.join(__dirname, '../public/build')
+  if (!fs.existsSync(buildPath)) {
+    fs.mkdirSync(buildPath, { recursive: true })
+  }
 
   fs.writeFileSync(
-    path.join(__dirname, '../public/build/info.json'),
+    path.join(buildPath, 'info.json'),
     JSON.stringify(buildInfo, null, 2),
   )
   console.log('build info generated', buildInfo)
