@@ -3,12 +3,13 @@
   "name": "remix-app-template",
   "description": "",
   "license": "",
+  "main": "build/index.js",
   "scripts": {
     "postinstall": "remix setup cloudflare-workers",
     "clean": "rm -rf dist build public/build",
     "build": "cross-env NODE_ENV=production run-p build:*",
     "build:css": "tailwindcss -i styles/tailwind.css -o app/styles/tailwind.css --minify",
-    "build:remix": "remix build --sourcemap",
+    "build:remix": "sleep 2 && remix build --sourcemap",
     "build:info": "node ./scripts/generate-build-info.js",
     "dev": "cross-env NODE_ENV=development run-p clean dev:*",
     "dev:remix": "remix watch",
@@ -58,6 +59,5 @@
   "engines": {
     "node": ">=14"
   },
-  "sideEffects": false,
-  "main": "dist/worker.js"
+  "sideEffects": false
 }
