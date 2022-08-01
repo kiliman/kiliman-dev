@@ -17,7 +17,7 @@ kv_namespaces = [
 bucket = "./public"
 
 [build]
-command = "npm run build"
+command = "echo 'The build was pre-executed.'"
 
 [miniflare]
 kv_persist = true
