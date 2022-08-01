@@ -13,10 +13,10 @@
     "build:info": "node ./scripts/generate-build-info.js",
     "dev": "npm run clean && run-p dev:*",
     "dev:remix": "remix watch",
-    "dev:miniflare": "sleep 2 && miniflare ./build/index.js --watch",
+    "dev:miniflare": "sleep 2 && miniflare ./build/index.js --watch --kv-persist",
     "dev:css": "tailwindcss -i styles/tailwind.css -o app/styles/tailwind.css --watch",
     "watch:content": "dotenv -e scripts/mdx/.env -- node scripts/watch-content.js --force",
-    "start": "cross-env NODE_ENV=production miniflare /build/index.js",
+    "start": "cross-env NODE_ENV=production miniflare /build/index.js --kv-persist",
     "deploy": "npm run build && wrangler publish",
     "act": "act compile-mdx -j compile --secret-file .env"
   },

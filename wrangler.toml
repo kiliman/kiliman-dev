@@ -1,23 +1,27 @@
 name = "kiliman-dev"
 type = "javascript"
+main = "./build/index.js"
+
 compatibility_date = "2022-04-05"
 
-zone_id = ""
 account_id = "ffc27d2c4ab35f6e6f2dc63e87cd82d3"
-route = ""
 workers_dev = true
 
-kv_namespaces = [
-  { binding = "SESSION", id = "80d5f4694dc04e74a9725a76d42f2ca3" },
-  { binding = "REDIRECT", id = "fa27a5210b3845409c039a9669d62f74" },
-  { binding = "CONTENT", id = "34dfc5454fe94b5c8ecdbb3a2d7f9cf2" }
-]
+[[kv_namespaces]]
+  binding = "SESSION"
+  id = "80d5f4694dc04e74a9725a76d42f2ca3"
+
+[[kv_namespaces]]
+  binding = "REDIRECT"
+  id = "fa27a5210b3845409c039a9669d62f74"
+
+[[kv_namespaces]]
+  binding = "CONTENT"
+  id = "34dfc5454fe94b5c8ecdbb3a2d7f9cf2"
+
 
 [site]
-bucket = "./public"
+  bucket = "./public"
 
 [build]
-command = "echo 'The build was pre-executed.'"
-
-[miniflare]
-kv_persist = true
+  command = "echo 'The build was pre-executed.'"
