@@ -1,10 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { Disclosure } from '@headlessui/react'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
+import NProgress from 'nprogress'
+import { useEffect, useRef } from 'react'
 import {
+  json,
   Link,
   Links,
+  LinksFunction,
   LiveReload,
   LoaderFunction,
-  LinksFunction,
   Meta,
   MetaFunction,
   NavLink,
@@ -12,18 +17,12 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch,
-  json,
   useTransition,
 } from 'remix'
-import clsx from 'clsx'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import NProgress from 'nprogress'
-import { siteTitle } from '~/utils/constants'
-
 import globalCss from '~/styles/global.css'
-import tailwindCss from '~/styles/tailwind.css'
 import nprogressCss from '~/styles/nprogress.css'
+import tailwindCss from '~/styles/tailwind.css'
+import { siteTitle } from '~/utils/constants'
 
 export const links: LinksFunction = () => {
   return [
@@ -43,7 +42,7 @@ export const loader: LoaderFunction = () =>
   })
 
 export default function App() {
-  let transition = useTransition()
+  const transition = useTransition()
   useEffect(() => {
     NProgress.configure({ showSpinner: false })
     if (transition.state === 'idle') {
