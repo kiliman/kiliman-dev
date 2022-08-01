@@ -1,12 +1,5 @@
-import {
-  HeadersFunction,
-  json,
-  Link,
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-  useLoaderData,
-} from 'remix'
+import { HeadersFunction, json, LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
+import { Link, useLoaderData } from "@remix-run/react";
 import { getMDXComponent } from '~/utils/mdx.client'
 import { siteTitle } from '~/utils/constants'
 import HeroImage from '~/components/HeroImage'

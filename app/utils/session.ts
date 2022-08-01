@@ -1,5 +1,5 @@
 // app/sessions.js
-import { createCloudflareKVSessionStorage, createCookie } from 'remix'
+import { createCloudflareKVSessionStorage, createCookie } from "@remix-run/cloudflare";
 declare var SESSION: KVNamespace
 
 // In this example the Cookie is created separately.

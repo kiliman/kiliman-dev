@@ -1,6 +1,7 @@
 import { renderToString } from 'react-dom/server'
-import type { EntryContext } from 'remix'
-import { HandleDataRequestFunction, RemixServer } from 'remix'
+import type { EntryContext } from "@remix-run/cloudflare";
+import { HandleDataRequestFunction } from "@remix-run/cloudflare";
+import { RemixServer } from "@remix-run/react";
 
 export default function handleRequest(
   request: Request,

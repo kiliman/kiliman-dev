@@ -3,22 +3,21 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import NProgress from 'nprogress'
 import { useEffect, useRef } from 'react'
+import { json, LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
+
 import {
-  json,
   Link,
   Links,
-  LinksFunction,
   LiveReload,
-  LoaderFunction,
   Meta,
-  MetaFunction,
   NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
   useTransition,
-} from 'remix'
+} from "@remix-run/react";
+
 import globalCss from '~/styles/global.css'
 import nprogressCss from '~/styles/nprogress.css'
 import tailwindCss from '~/styles/tailwind.css'

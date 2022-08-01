@@ -1,14 +1,7 @@
 import { CalendarIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
-import {
-  HeadersFunction,
-  json,
-  Link,
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-  useLoaderData,
-} from 'remix'
+import { HeadersFunction, json, LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
+import { Link, useLoaderData } from "@remix-run/react";
 import HeroImage from '~/components/HeroImage'
 import Tag from '~/components/Tag'
 import codeHikeCss from '~/styles/code-hike.css'

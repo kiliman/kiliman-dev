@@ -1,4 +1,5 @@
-import { Link as RemixLink, MetaFunction } from 'remix'
+import { MetaFunction } from "@remix-run/cloudflare";
+import { Link as RemixLink } from "@remix-run/react";
 import { siteTitle } from '~/utils/constants'
 
 export const meta: MetaFunction = () => ({

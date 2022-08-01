@@ -1,4 +1,4 @@
-import { json, LoaderFunction } from 'remix'
+import { json, LoaderFunction } from "@remix-run/cloudflare";
 declare var CONTENT: KVNamespace
 
 export const loader: LoaderFunction = async () => {

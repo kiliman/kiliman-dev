@@ -1,6 +1,6 @@
 name = "kiliman-dev"
 type = "javascript"
-compatibility_date = "2021-12-06"
+compatibility_date = "2022-04-05"
 
 zone_id = ""
 account_id = "ffc27d2c4ab35f6e6f2dc63e87cd82d3"
@@ -15,13 +15,9 @@ kv_namespaces = [
 
 [site]
 bucket = "./public"
-entry-point = "."
 
 [build]
-command = "echo 'The build was pre-executed.'"
-
-[build.upload]
-format="service-worker"
+command = "npm run build"
 
 [miniflare]
 kv_persist = true

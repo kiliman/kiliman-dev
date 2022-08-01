@@ -1,11 +1,5 @@
-import {
-  HeadersFunction,
-  json,
-  Link as RemixLink,
-  LoaderFunction,
-  MetaFunction,
-  useLoaderData,
-} from 'remix'
+import { HeadersFunction, json, LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
+import { Link as RemixLink, useLoaderData } from "@remix-run/react";
 import { siteTitle } from '~/utils/constants'
 declare var CONTENT: KVNamespace
 
