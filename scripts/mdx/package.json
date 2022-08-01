@@ -10,6 +10,8 @@
   "author": "Michael J. Carter <kiliman@gmail.com> (https://kiliman.dev/)",
   "license": "MIT",
   "dependencies": {
+    "@code-hike/mdx": "^0.3.0-next.14",
+    "@ryanflorence/md": "^7.1.0",
     "commander": "^8.3.0",
     "dotenv": "^10.0.0",
     "esbuild": "^0.14.8",
@@ -19,7 +21,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rehype": "^12.0.0",
-    "rehype-highlight": "^5.0.2",
-    "remark-mdx-code-meta": "^1.0.0"
+    "shiki": "^0.10.1"
   }
 }

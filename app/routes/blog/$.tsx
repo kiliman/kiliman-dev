@@ -1,27 +1,27 @@
+import { CalendarIcon } from '@heroicons/react/outline'
+import clsx from 'clsx'
 import {
   HeadersFunction,
   json,
+  Link,
   LinksFunction,
   LoaderFunction,
   MetaFunction,
   useLoaderData,
-  Link,
 } from 'remix'
-import { getMDXComponent } from '~/utils/mdx.client'
-import customCodeCss from '~/styles/custom-code.css'
-import { siteTitle } from '~/utils/constants'
-import { useEffect } from 'react'
-import clsx from 'clsx'
-import { CalendarIcon } from '@heroicons/react/outline'
 import HeroImage from '~/components/HeroImage'
 import Tag from '~/components/Tag'
+import codeHikeCss from '~/styles/code-hike.css'
+import customCodeCss from '~/styles/custom-code.css'
+import { siteTitle } from '~/utils/constants'
+import { getMDXComponent } from '~/utils/mdx.client'
 
 declare var CONTENT: KVNamespace
 
 export const links: LinksFunction = () => [
   {
     rel: 'stylesheet',
-    href: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/github-dark.min.css',
+    href: codeHikeCss,
   },
   {
     rel: 'stylesheet',
@@ -50,19 +50,19 @@ type FrontmatterType = {
 export const headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  let slug = params['*']
-  if (slug === undefined) {
+  let routeSlug = params['*']
+  if (routeSlug === undefined) {
     throw new Response('Not Found', { status: 404 })
   }
-  const data = (await CONTENT.get(`blog/${slug}`, 'json')) as ContentType
-  if (data === undefined) {
+  const data = (await CONTENT.get(`blog/${routeSlug}`, 'json')) as ContentType
+  if (!data) {
     throw new Response('Not Found', { status: 404 })
   }
   const { commit }: any = (await CONTENT.get('$$deploy-sha', 'json')) ?? {
     commit: {},
   }
   const commitSha = commit.sha ?? '0'
-  const { frontmatter, series, html, code, hash } = data
+  const { slug, frontmatter, html, code, hash } = data
 
   // weak hash should include commit sha since changes in code
   // could result in changes to the content page
@@ -71,19 +71,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   if (etag === weakHash) {
     return new Response(null, { status: 304 })
   }
-  let seriesIndex: any = undefined
-  if (slug.endsWith('/series')) {
-    seriesIndex = {
-      slug: data.slug,
-      title: frontmatter.title,
-      posts: await getPostsForSeries(frontmatter),
-    }
-  } else if (series) {
-    seriesIndex = {
-      slug: series.slug,
-      title: series.title,
-      posts: await getPostsForSeries(series),
-    }
+
+  // get series if post is part of a series
+  let series
+  if (data.series) {
+    series = await CONTENT.get(data.series.slug, 'json')
   }
 
   const language =
@@ -95,13 +87,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       frontmatter,
       html,
       code,
-      seriesIndex,
-      date: frontmatter.published
-        ? new Intl.DateTimeFormat(language, {
-            timeZone: 'UTC',
-            dateStyle: 'long',
-          }).format(new Date(frontmatter.published))
-        : 'Draft',
+      series,
+      date:
+        frontmatter.published && frontmatter.published !== 'draft'
+          ? new Intl.DateTimeFormat(language, {
+              timeZone: 'UTC',
+              dateStyle: 'long',
+            }).format(new Date(frontmatter.published))
+          : 'Draft',
     },
     {
       headers: {
@@ -112,6 +105,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     },
   )
 }
+
 export let meta: MetaFunction = ({ data }) => {
   let title = siteTitle
   let description = ''
@@ -124,10 +118,9 @@ export let meta: MetaFunction = ({ data }) => {
     description,
   }
 }
-
 export default function Post() {
   const data = useLoaderData()
-  const { html, slug, frontmatter, code, seriesIndex, date } = data
+  const { html, slug, frontmatter, code, series, date } = data
   let Component = null
   if (typeof window !== 'undefined' && code) {
     Component = getMDXComponent(code)
@@ -154,8 +147,8 @@ export default function Post() {
             </div>
           )}
         </div>
-        {seriesIndex && !slug.endsWith('/series') && (
-          <SeriesIndex seriesIndex={seriesIndex} slug={slug} />
+        {series && !slug.endsWith('/series') && (
+          <SeriesIndex series={series} slug={slug} />
         )}
 
         {Component ? (
@@ -168,39 +161,75 @@ export default function Post() {
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
-        {seriesIndex && slug.endsWith('/series') && (
-          <SeriesIndex seriesIndex={seriesIndex} slug={slug} />
-        )}
+        {slug.endsWith('/series') && <SeriesIndex series={data} slug={slug} />}
       </div>
     </>
   )
 }
 
-function SeriesIndex({ seriesIndex, postSlug }: any) {
-  const { slug, title, posts } = seriesIndex
+function SeriesIndex({ series, slug }: any) {
+  const { frontmatter } = series
+  const seriesRoot = series.slug.replace(/\/series$/, '')
+  const parts = slug.split('/')
+  const last = parts[parts.length - 1]
+  let index = -1
   let start = 0
-  let end = seriesIndex.posts.length - 1
-  if (!slug.endsWith('/series')) {
-    const index = getSeriesPostNumber(posts, postSlug)
+  let end = frontmatter.posts.length - 1
+  let postSlug: string | undefined = undefined
+  if (last !== series) {
+    postSlug = last
+    index = getSeriesPostNumber(frontmatter.posts, postSlug!)
     start = Math.max(index - 2, 0)
-    end = Math.min(index + 3, posts.length - 1)
+    end = Math.min(index + 3, frontmatter.posts.length - 1)
   }
   return (
-    <div className="w-full py-3 m-auto mt-6 rounded-lg sm:w-3/4 bg-slate-700 text-slate-100">
-      <Link to={`/${slug}`} className="block px-4 mb-1 text-lg font-medium">
-        {title} ({posts.length} Part Series)
+    <div className="w-full py-3 m-auto my-6 rounded-lg sm:w-3/4 bg-slate-700 text-slate-100">
+      <Link
+        to={`/${series.slug}`}
+        className="block px-4 mb-1 text-lg font-medium"
+      >
+        {frontmatter.title} ({frontmatter.posts.length} Part Series)
       </Link>
       <ul>
-        {posts.map(({ slug, frontmatter }: any, index: number) => (
-          <li key={slug} className="px-4 py-1.5 hover:bg-slate-600">
-            <Link to={`/${slug}`} className="flex items-baseline gap-2">
+        {/* {start > 0 && (
+          <li
+            className={clsx(
+              'px-4 py-1.5 hover:bg-slate-600',
+              postSlug && postSlug === slug && 'bg-slate-800',
+            )}
+          >
+            Posts #1 &ndash; {start + 1}
+          </li>
+        )} */}
+        {frontmatter.posts.map((slug: any, index: number) => (
+          <li
+            key={slug}
+            className={clsx(
+              'px-4 py-1.5 hover:bg-slate-600',
+              postSlug && postSlug === slug && 'bg-slate-800',
+            )}
+          >
+            <Link
+              to={`/${seriesRoot}/${slug}`}
+              className="flex items-baseline gap-2"
+            >
               <div className="flex items-center justify-center w-6 h-6 p-2 text-sm rounded-full bg-slate-900">
                 {index + 1}
               </div>
-              <div>{frontmatter.title}</div>
+              <div>{frontmatter.postInfo[slug].title}</div>
             </Link>
           </li>
         ))}
+        {/* {frontmatter.posts.length - end > 0 && (
+          <li
+            className={clsx(
+              'px-4 py-1.5 hover:bg-slate-600',
+              postSlug && postSlug === slug && 'bg-slate-800',
+            )}
+          >
+            Posts #{end} &ndash; {frontmatter.posts.length}
+          </li>
+        )} */}
       </ul>
     </div>
   )
@@ -220,11 +249,8 @@ function getPostsForSeries(series: any) {
   )
 }
 
-function getSeriesPostNumber(posts: string[], slug: string) {
-  // get last segment of slug
-  const parts = slug.split('/')
-  const last = parts[parts.length - 1]
-  return posts.indexOf(last) + 1
+function getSeriesPostNumber(posts: string[], postSlug: string) {
+  return posts.indexOf(postSlug) + 1
 }
 
 function generateWeakHash(commitSha: string, hash: string) {

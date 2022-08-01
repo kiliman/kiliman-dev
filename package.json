@@ -11,7 +11,7 @@
     "build:css": "tailwindcss -i styles/tailwind.css -o app/styles/tailwind.css --minify",
     "build:remix": "sleep 2 && remix build --sourcemap",
     "build:info": "node ./scripts/generate-build-info.js",
-    "dev": "cross-env NODE_ENV=development run-p clean dev:*",
+    "dev": "run-p clean dev:*",
     "dev:remix": "remix watch",
     "dev:miniflare": "sleep 2 && miniflare ./build/index.js --watch",
     "dev:css": "tailwindcss -i styles/tailwind.css -o app/styles/tailwind.css --watch",

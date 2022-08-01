@@ -5,7 +5,7 @@ const exec = require('util').promisify(require('child_process').exec)
 const cacheFilePath = './content/.cache.json'
 const refreshFilePath = './app/.refresh.ignore'
 let refreshTimeout = undefined
-let force = true
+let force = false
 
 ;(async function () {
   await main()
@@ -19,17 +19,30 @@ async function main() {
   }
 
   try {
-    chokidar.watch('./content').on('all', async (event, path) => {
-      console.log(event, path)
+    chokidar.watch('./content').on('all', async (event, filePath) => {
       if (event === 'addDir') return
-      const filePath = path
-      const { match, dir, file } = validContentPath(path)
+      const { match, dir, file } = validContentPath(filePath)
       if (!match) return
 
-      console.log({ event, path, dir, file })
-      const lastModified = Math.floor(fs.statSync(path).mtimeMs)
-      if (!force && cache[path] && cache[path].lastModified === lastModified) {
-        console.log(`${path} has not changed`)
+      console.log(event, filePath)
+
+      let lastModified = Math.floor(fs.statSync(filePath).mtimeMs)
+      if (!file.endsWith('.mdx')) {
+        // component file so save in cache
+        cache[filePath] = { lastModified }
+        // so recompile index.mdx
+        filePath = path.join(path.dirname(filePath), 'index.mdx')
+        const indexModified = Math.floor(fs.statSync(filePath).mtimeMs)
+        if (indexModified > lastModified) {
+          lastModified = indexModified
+          console.error('updating index.mdx for component')
+        }
+      }
+      if (
+        !force &&
+        cache[filePath] &&
+        cache[filePath].lastModified === lastModified
+      ) {
         return
       }
 
@@ -38,14 +51,10 @@ async function main() {
         clearTimeout(refreshTimeout)
         refreshTimeout = undefined
       }
+      const results = await doCompile(filePath)
+      if (!results[filePath]) return
 
-      console.error('Compiling', path)
-      const results = await doCompile(path)
-      console.error('results', results[path])
-      if (!results[path]) return
-
-      const { hash } = results[path]
-      console.log(results)
+      const { hash } = results[filePath]
       updateCache(cache, filePath, {
         //series,
         lastModified,
@@ -53,6 +62,7 @@ async function main() {
       })
       refreshTimeout = setTimeout(() => {
         // update refresh file to trigger rebuild/refresh
+        console.log('Refreshing...')
         fs.writeFileSync(refreshFilePath, String(lastModified), 'utf8')
         refreshTimeout = undefined
       }, 1000)
@@ -76,7 +86,7 @@ async function doCompile(path) {
 }
 
 function validContentPath(contentPath) {
-  const match = /\/?(?<dir>content\/(?:.*))\/(?<file>[^.]+\.mdx)$/gm.exec(
+  const match = /\/?(?<dir>content\/(?:.*))\/(?<file>[\S]+)$/gm.exec(
     contentPath,
   )
   if (!match) return { match: false }
