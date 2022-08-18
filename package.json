@@ -21,6 +21,7 @@
     "act": "act compile-mdx -j compile --secret-file .env"
   },
   "dependencies": {
+    "@code-hike/mdx": "^0.7.3",
     "@headlessui/react": "^1.4.3",
     "@heroicons/react": "^1.0.5",
     "@remix-run/cloudflare": "^1.6.7",

@@ -1,0 +1,65 @@
+---
+title: Filenames
+published: 2022-08-18
+description: Example showing CodeHike's filename support.
+---
+
+Adding a filename to the codeblock
+
+```js app.js
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+## Tabs
+
+To add more tabs, wrap multiple codeblocks with `<CH.Code/>`:
+
+<CH.Code lineNumbers={true}>
+
+```js app.js
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+```css styles.css
+.lorem {
+  color: #fff;
+  padding: 10px;
+  background: #000;
+}
+```
+
+</CH.Code>
+
+## Panels
+
+The _editor_ can be splitted vertically in two panels using `---`
+
+<CH.Code>
+
+```js app.js
+function lorem(ipsum, dolor = 1) {
+  const sit = ipsum == null ? 0 : ipsum.sit
+  dolor = sit - amet(dolor)
+  return sit ? consectetur(ipsum) : []
+}
+```
+
+---
+
+```css styles.css
+.lorem {
+  color: #fff;
+  padding: 10px;
+  background: #000;
+}
+```
+
+</CH.Code>

@@ -1,19 +1,17 @@
 import { remarkCodeHike } from '@code-hike/mdx'
-import { Command } from 'commander/esm.mjs'
+import { CH } from '@code-hike/mdx/components'
+import { Command } from 'commander'
 import * as crypto from 'crypto'
 import { config } from 'dotenv'
 import * as fs from 'fs'
 import * as fsp from 'fs/promises'
 import { bundleMDX } from 'mdx-bundler'
 import { getMDXComponent } from 'mdx-bundler/client/index.js'
-import { createRequire } from 'module'
 import fetch from 'node-fetch'
 import * as path from 'path'
 import * as React from 'react'
-import { renderToString } from 'react-dom/server.js'
-const require = createRequire(import.meta.url)
-const theme = require('shiki/themes/github-dark-dimmed.json')
-
+import { renderToString } from 'react-dom/server'
+import theme from 'shiki/themes/material-default.json'
 ;(async function () {
   config()
   const program = new Command()
@@ -82,8 +80,26 @@ const theme = require('shiki/themes/github-dark-dimmed.json')
         mdxSource = await fsp.readFile(fullPath, 'utf8')
       }
       const cwd = Object.keys(files).length
-        ? path.join(rootPath, mdxPath)
+        ? path.resolve(process.cwd(), path.join(rootPath, mdxPath))
         : undefined
+
+      if (process.platform === 'win32') {
+        process.env.ESBUILD_BINARY_PATH = path.join(
+          process.cwd(),
+          'node_modules',
+          'esbuild',
+          'esbuild.exe',
+        )
+      } else {
+        process.env.ESBUILD_BINARY_PATH = path.join(
+          process.cwd(),
+          'node_modules',
+          'esbuild',
+          'bin',
+          'esbuild',
+        )
+      }
+
       const { frontmatter, code } = await bundleMDX({
         source: mdxSource,
         files,
@@ -92,17 +108,19 @@ const theme = require('shiki/themes/github-dark-dimmed.json')
         xdmOptions(options) {
           options.remarkPlugins = [
             ...(options.remarkPlugins ?? []),
-            [remarkCodeHike, { theme }],
+            [
+              remarkCodeHike,
+              { showCopyButton: true, theme, autoImport: false },
+            ],
           ]
-          // options.rehypePlugins = [
-          //   ...(options.rehypePlugins ?? []),
-          //   rehypeHighlight,
-          // ]
           return options
         },
       })
+
       const Component = getMDXComponent(code)
-      const html = renderToString(React.createElement(Component))
+      const html = renderToString(
+        React.createElement(Component, { theme, components: { CH } }),
+      )
 
       let seriesRoot = undefined
       let series = undefined
@@ -254,6 +272,8 @@ async function postContent(slug, frontmatter, html, code, files, series) {
     )
     .digest('hex')
 
+  const hasCode =
+    (files && Object.keys(files).length > 0) || /<code/g.test(html)
   const response = await fetch(`${process.env.API_URL}/post-content`, {
     method: 'post',
     body: JSON.stringify({
@@ -269,7 +289,7 @@ async function postContent(slug, frontmatter, html, code, files, series) {
           }
         : undefined,
       html,
-      code: files && Object.keys(files).length > 0 ? code : undefined,
+      code: hasCode ? code : undefined,
     }),
     headers: {
       authorization: `Bearer ${process.env.POST_API_KEY}`,

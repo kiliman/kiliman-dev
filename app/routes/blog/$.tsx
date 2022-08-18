@@ -1,26 +1,23 @@
+import { CH } from '@code-hike/mdx/components'
 import { CalendarIcon } from '@heroicons/react/outline'
+import theme from 'shiki/themes/material-default.json'
+
+import {
+  HeadersFunction,
+  json,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/cloudflare'
+import { Link, useLoaderData } from '@remix-run/react'
 import clsx from 'clsx'
-import { HeadersFunction, json, LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
-import { Link, useLoaderData } from "@remix-run/react";
+import { useEffect } from 'react'
+import { hydrate } from 'react-dom'
 import HeroImage from '~/components/HeroImage'
 import Tag from '~/components/Tag'
-import codeHikeCss from '~/styles/code-hike.css'
-import customCodeCss from '~/styles/custom-code.css'
 import { siteTitle } from '~/utils/constants'
 import { getMDXComponent } from '~/utils/mdx.client'
 
 declare var CONTENT: KVNamespace
-
-export const links: LinksFunction = () => [
-  {
-    rel: 'stylesheet',
-    href: codeHikeCss,
-  },
-  {
-    rel: 'stylesheet',
-    href: customCodeCss,
-  },
-]
 
 type ContentType = {
   slug: string
@@ -90,11 +87,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           : 'Draft',
     },
     {
-      headers: {
+      headers: [
         // use weak etag because Cloudflare only supports
-        // srong etag on Enterprise plans :(
-        ETag: weakHash,
-      },
+        // strong etag on Enterprise plans :(
+        ['etag', weakHash],
+      ],
     },
   )
 }
@@ -114,23 +111,32 @@ export let meta: MetaFunction = ({ data }) => {
 export default function Post() {
   const data = useLoaderData()
   const { html, slug, frontmatter, code, series, date } = data
-  let Component = null
-  if (typeof window !== 'undefined' && code) {
+  console.log('hasCode', !!code)
+  let Component: any = null
+  if (typeof document !== 'undefined' && code) {
     Component = getMDXComponent(code)
   }
+  useEffect(() => {
+    if (Component) {
+      hydrate(
+        <Component theme={theme} components={{ CH }} />,
+        document.getElementById('post') as HTMLElement,
+      )
+    }
+  }, [Component])
   return (
     <>
       <HeroImage frontmatter={frontmatter} />
-      <div className="m-auto max-w-prose">
+      <div className="m-auto max-w-none">
         <h1 className="mb-4 text-3xl font-bold text-center">
-          {frontmatter.title}
+          {frontmatter?.title}
         </h1>
         <div className="flex justify-between mb-6 items-bottom">
           <div className="flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-slate-200" />
             <div>{date}</div>
           </div>
-          {frontmatter.tags && (
+          {frontmatter?.tags && (
             <div className="flex items-center gap-2">
               {frontmatter.tags.map((tag: string) => (
                 <Link key={tag} to={`/blog/tags/${tag}`}>
@@ -143,18 +149,27 @@ export default function Post() {
         {series && !slug.endsWith('/series') && (
           <SeriesIndex series={series} slug={slug} />
         )}
-
-        {Component ? (
+        <div
+          id="post"
+          className="prose dark:prose-invert prose-slate max-w-none"
+          suppressHydrationWarning={true}
+          dangerouslySetInnerHTML={{
+            __html: html, //.replace(/opacity:0/g, 'opacity:1'),
+          }}
+        />
+        {/* {Component ? (
           <main className="prose dark:prose-invert prose-slate">
-            <Component />
+            <Component theme={theme} components={{ CH }} />
           </main>
         ) : (
           <main
             className="prose dark:prose-invert prose-slate"
-            dangerouslySetInnerHTML={{ __html: html }}
+            dangerouslySetInnerHTML={{
+              __html: html.replace(/opacity:0/g, 'opacity:1'),
+            }}
           />
-        )}
-        {slug.endsWith('/series') && <SeriesIndex series={data} slug={slug} />}
+        )} */}
+        {slug?.endsWith('/series') && <SeriesIndex series={data} slug={slug} />}
       </div>
     </>
   )

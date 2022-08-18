@@ -3,8 +3,8 @@
     "remix.env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "scripts/mdx/test.mjs",
-    "scripts/mdx/compile-mdx.mjs"
+    "scripts/mdxold/test.mjs",
+    "scripts/mdxold/compile-mdx.ts"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],

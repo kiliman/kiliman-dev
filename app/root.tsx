@@ -1,9 +1,14 @@
 import { Disclosure } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import {
+  json,
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/cloudflare'
 import clsx from 'clsx'
 import NProgress from 'nprogress'
 import { useEffect, useRef } from 'react'
-import { json, LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
 
 import {
   Link,
@@ -16,8 +21,10 @@ import {
   ScrollRestoration,
   useCatch,
   useTransition,
-} from "@remix-run/react";
+} from '@remix-run/react'
 
+import codehikeCss from '@code-hike/mdx/dist/index.css'
+import customCss from '~/styles/custom.css'
 import globalCss from '~/styles/global.css'
 import nprogressCss from '~/styles/nprogress.css'
 import tailwindCss from '~/styles/tailwind.css'
@@ -27,7 +34,9 @@ export const links: LinksFunction = () => {
   return [
     { rel: 'stylesheet', href: globalCss },
     { rel: 'stylesheet', href: tailwindCss },
+    { rel: 'stylesheet', href: codehikeCss },
     { rel: 'stylesheet', href: nprogressCss },
+    { rel: 'stylesheet', href: customCss },
   ]
 }
 

@@ -78,7 +78,7 @@ function updateCache(cache, path, entry) {
 }
 
 async function doCompile(path) {
-  const command = `node scripts/mdx/compile-mdx.mjs --json --file ${path}`
+  const command = `scripts/mdx/compile-mdx.sh ${path}`
   let out = await exec(command).catch(e => {
     console.error(e)
   })
