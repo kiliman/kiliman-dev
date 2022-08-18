@@ -85,7 +85,7 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 
       - name: 🚀 Update deploy sha
-        run: node ./scripts/mdx/update-deploy-sha.js
+        run: node ./scripts/mdx/update-deploy-sha.mjs
         env:
           COMMIT_SHA: ${{ github.sha }}
           API_URL: ${{ secrets.API_URL }}
