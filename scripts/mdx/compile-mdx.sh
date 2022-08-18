@@ -1,2 +1,2 @@
 #!/bin/bash
-node -r esbuild-runner/register scripts/mdx/compile-mdx.ts --json --file $*
+node -r esbuild-runner/register compile-mdx.ts --json --file $*
