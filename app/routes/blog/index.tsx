@@ -1,23 +1,22 @@
-import { HeadersFunction, json, LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
-import { Link as RemixLink, useLoaderData } from "@remix-run/react";
+import {
+  HeadersFunction,
+  json,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/cloudflare'
+import { Link as RemixLink, useLoaderData } from '@remix-run/react'
 import { siteTitle } from '~/utils/constants'
 declare var CONTENT: KVNamespace
 
 export const headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders
 
 export const loader: LoaderFunction = async () => {
-  const slugs = await CONTENT.list({ prefix: 'blog/' })
-  const content = await Promise.all(
-    slugs.keys.map(async ({ name }) => {
-      const data = await CONTENT.get(name, 'json')
-      const { slug, frontmatter, series } = data as any
-      return { slug, frontmatter, series }
-    }),
-  )
-  const posts = content.filter(({ slug }) => !slug.endsWith('/series'))
-  const series = content.filter(({ slug }) => slug.endsWith('/series'))
+  const [posts, series] = await Promise.all([
+    CONTENT.get('blog/$index', 'json'),
+    CONTENT.get('blog/$series', 'json'),
+  ])
   return json(
-    { posts, series, cursor: slugs.cursor, list_complete: slugs.list_complete },
+    { posts, series },
     {
       headers: {
         'cache-control': 'max-age=300',
@@ -36,16 +35,17 @@ export default function Index() {
       <div className="basis-2/3">
         <h1 className="text-3xl font-bold">Blog Posts</h1>
         <ul className="mt-6">
-          {posts.map(({ slug, frontmatter, series }: any) => (
-            <ListItem key={slug}>
-              <Link to={`/${slug}`}>{frontmatter.title}</Link>
+          {posts.map((post: any) => (
+            <ListItem key={post.slug}>
+              <Link to={`/${post.slug}`}>{post.title}</Link>
               <p className="mt-1 text-sm text-slate-300 line-clamp-2">
-                {frontmatter.description}
+                {post.description}
               </p>
-              {series && (
+              {post.series && (
                 <p>
-                  Series <Link to={`/${series.slug}`}>{series.title}</Link>{' '}
-                  (Post #{series.sequence} of {series.length})
+                  Series{' '}
+                  <Link to={`/${post.series.slug}`}>{post.series.title}</Link>{' '}
+                  (Post #{post.series.sequence} of {post.series.count})
                 </p>
               )}
             </ListItem>
@@ -55,7 +55,7 @@ export default function Index() {
       <div className="basis-1/3">
         <h1 className="text-3xl font-bold">Blog Series</h1>
         <ul className="mt-6">
-          {series.map(({ slug, frontmatter }: any) => (
+          {series.map(({ slug, ...frontmatter }: any) => (
             <ListItem key={slug}>
               <Link to={`/${slug}`}>{frontmatter.title}</Link>
               <p className="mt-1 text-sm text-slate-300 line-clamp-2">
