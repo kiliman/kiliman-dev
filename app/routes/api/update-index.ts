@@ -9,9 +9,8 @@ export const action: ActionFunction = async ({ request }) => {
     if (key !== `Bearer ${POST_API_KEY}`) {
       return new Response(`Unauthorized ${key}`, { status: 401 })
     }
-    const data: any = await request.json()
-    console.log(`posting ${data.slug}...`)
-    await CONTENT.put(data.slug, JSON.stringify(data))
+    const data = await request.json()
+    await CONTENT.put('blog/$index', JSON.stringify(data))
     return json({ success: true })
   } catch (e) {
     //@ts-expect-error
