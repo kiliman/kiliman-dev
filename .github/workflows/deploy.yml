@@ -131,7 +131,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
 
       - name: 🚀 Update content sha
-        run: ./scripts/mdx/update-content-sha.mjs
+        run: node ./scripts/mdx/update-content-sha.mjs
         env:
           COMMIT_SHA: ${{ github.sha }}
           API_URL: ${{ secrets.API_URL }}
