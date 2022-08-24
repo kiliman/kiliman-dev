@@ -12,7 +12,7 @@ export const action: ActionFunction = async ({ request }) => {
     const data: any = await request.json()
     console.log(`posting ${data.slug}...`)
     await CONTENT.put(data.slug, JSON.stringify(data))
-    return json({ success: true })
+    return json({ success: true, slug: data.slug })
   } catch (e) {
     //@ts-expect-error
     return json({ message: e.message, stack: e.stack })

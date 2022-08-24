@@ -292,6 +292,8 @@ async function postContent(
       authorization: `Bearer ${process.env.API_KEY}`,
     },
   })
+  const json = await response.json()
+  console.error(json)
   return [response, hash]
 }
 async function updateSeries() {
