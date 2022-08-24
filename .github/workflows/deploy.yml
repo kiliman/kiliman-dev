@@ -123,7 +123,7 @@ jobs:
         run: cd ./scripts/mdx && npm install
 
       - name: 🚀 Compile and post MDX
-        run: cd ./scripts/mdx/compile-mdx.sh ${{needs.changes.outputs.CONTENT}}
+        run: ./scripts/mdx/compile-mdx.sh ${{needs.changes.outputs.CONTENT}}
         env:
           API_URL: ${{ secrets.API_URL }}
           API_KEY: ${{ secrets.API_KEY }}
