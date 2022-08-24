@@ -1,37 +1,108 @@
-import type { LoaderFunction, MetaFunction } from "@remix-run/cloudflare";
-import { json } from "@remix-run/cloudflare";
-import { Link, useLoaderData } from "@remix-run/react";
-import { commitSession, getSession } from '~/utils/session'
-import { debug } from '~/utils/debug'
+import { CalendarIcon } from '@heroicons/react/outline'
+import {
+  HeadersFunction,
+  json,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/cloudflare'
+import { Link as RemixLink, useLoaderData } from '@remix-run/react'
+import Logo from '~/components/Logo'
 import { siteTitle } from '~/utils/constants'
+declare var CONTENT: KVNamespace
 
-export let loader: LoaderFunction = async ({ request }) => {
-  const session = await getSession(request.headers.get('cookie'))
-  const time = Number(session.get('time') ?? 0)
-  console.log({ time })
-  session.set('time', Date.now())
-  const data = { message: 'hello world', time }
+export const headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders
 
-  return json(data, { headers: { 'set-cookie': await commitSession(session) } })
+export const loader: LoaderFunction = async () => {
+  const posts = (await CONTENT.get('blog/$index', 'json')) as any[]
+  return json(
+    { posts: posts.slice(0, 6) },
+    {
+      headers: {
+        'cache-control': 'max-age=300',
+      },
+    },
+  )
 }
-
-export let meta: MetaFunction = () => {
-  return {
-    title: siteTitle,
-    description: 'Blog about web development',
-  }
-}
+export const meta: MetaFunction = () => ({
+  title: `${siteTitle}`,
+})
 
 export default function Index() {
-  const { message, time } = useLoaderData()
+  const { posts } = useLoaderData()
   return (
-    <>
-      <h1 className="text-3xl font-bold">Welcome to {siteTitle}</h1>
-    </>
+    <div className="container flex flex-col gap-4 m-auto">
+      <h1 className="text-3xl font-bold">Latest Blog Posts</h1>
+      <ul className="mt-6 flex flex-col sm:flex-row flex-wrap w-full gap-y-4 sm:gap-y-8 gap-x-4">
+        {posts.map((post: any) => (
+          <li
+            key={post.slug}
+            className="mb-4 flex-1 sm:w-[45%] sm:min-w-[45%] md:w-[30%] md:min-w-[30%]"
+          >
+            <div className="flex">
+              <Link to={`/${post.slug}`}>
+                {post.image ? (
+                  <img
+                    className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4"
+                    src={post.image.url.replace(
+                      /public$/,
+                      'width=256,height=256,fit=crop,gravity=0.5x0.5',
+                    )}
+                    alt={post.title}
+                  />
+                ) : (
+                  <Logo className="min-w-[64px] min-[64px] h-16 w-16 rounded mr-4" />
+                )}
+              </Link>
+              <div>
+                <Link to={`/${post.slug}`}>
+                  <div>{post.title}</div>
+                </Link>
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4 text-slate-200" />
+                  <div className="text-sm text-slate-200">
+                    {post.published && post.published !== 'draft'
+                      ? new Intl.DateTimeFormat('en-us', {
+                          timeZone: 'UTC',
+                          dateStyle: 'long',
+                        }).format(new Date(post.published))
+                      : 'Draft'}
+                  </div>
+                </div>
+                <p className="mt-1 text-sm text-slate-300 line-clamp-2">
+                  {post.description}
+                </p>
+                {/* {post.series && (
+                    <p className="mt-2">
+                      Series{' '}
+                      <Link to={`/${post.series.slug}`}>
+                        {post.series.title}
+                      </Link>{' '}
+                      (Post #{post.series.sequence} of {post.series.count})
+                    </p>
+                  )} */}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
-function Time({ utc }: { utc: number }) {
-  const local = new Date(utc).toLocaleString()
-  return <time>{local}</time>
+function ListItem({ children, className }: any) {
+  return <li className={`mb-4 ${className}`}>{children}</li>
+}
+function Link({ to, children }: any) {
+  return (
+    <RemixLink to={to} className="text-lg text-white hover:underline">
+      {children}
+    </RemixLink>
+  )
+}
+
+function getSeriesPostNumber(posts: string[], slug: string) {
+  // get last segment of slug
+  const parts = slug.split('/')
+  const last = parts[parts.length - 1]
+  return posts.indexOf(last) + 1
 }
