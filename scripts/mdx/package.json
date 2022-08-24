@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "bundle": "node -r esbuild-runner/register bundle.ts"
-  },
+  "scripts": {},
   "keywords": [],
   "author": "Michael J. Carter <kiliman@gmail.com> (https://kiliman.dev/)",
   "license": "MIT",

@@ -111,7 +111,6 @@ export let meta: MetaFunction = ({ data }) => {
 export default function Post() {
   const data = useLoaderData()
   const { html, slug, frontmatter, code, series, date } = data
-  console.log('hasCode', !!code)
   let Component: any = null
   if (typeof document !== 'undefined' && code) {
     Component = getMDXComponent(code)
