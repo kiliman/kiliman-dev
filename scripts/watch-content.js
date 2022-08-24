@@ -78,11 +78,12 @@ function updateCache(cache, path, entry) {
 }
 
 async function doCompile(path) {
-  const command = `scripts/mdx/compile-mdx.sh ${path}`
+  const command = `./scripts/mdx/compile-mdx.sh ${path}`
   let out = await exec(command).catch(e => {
     console.error(e)
   })
-  return JSON.parse(out.stdout)
+  const output = out.stdout
+  return JSON.parse(output)
 }
 
 function validContentPath(contentPath) {

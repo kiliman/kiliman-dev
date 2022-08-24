@@ -46,7 +46,7 @@ const index: Record<string, any> = {}
     process.exit(1)
   }
 
-  rootPath = options.root ?? process.cwd()
+  rootPath = options.root ?? '.'
   mdxPaths = options.file ?? []
 
   if (options.regen) {
@@ -367,6 +367,7 @@ async function generateIndex() {
     description: series.frontmatter.description,
     published: series.frontmatter.published,
     count: series.frontmatter.posts.length,
+    image: series.frontmatter.image,
   }))
   series.sort((a: Frontmatter, b: Frontmatter) => {
     const aDate = new Date(a.updated ?? a.published)
