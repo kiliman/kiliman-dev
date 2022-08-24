@@ -32,7 +32,7 @@ async function go() {
     method: 'post',
     body: JSON.stringify(buildInfo),
     headers: {
-      authorization: `Bearer ${process.env.POST_API_KEY}`,
+      authorization: `Bearer ${process.env.API_KEY}`,
     },
   })
   if (!response.ok) {

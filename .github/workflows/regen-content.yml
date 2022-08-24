@@ -25,14 +25,14 @@ jobs:
         run: cd ./scripts/mdx && npm install
 
       - name: 🚀 Compile and post MDX
-        run: cd ./scripts/mdx && ./compile-mdx.sh --regen
+        run: ./scripts/mdx/compile-mdx.sh --regen
         env:
           API_URL: ${{ secrets.API_URL }}
-          POST_API_KEY: ${{ secrets.POST_API_KEY }}
+          API_KEY: ${{ secrets.API_KEY }}
 
       - name: 🚀 Update content sha
-        run: cd ./scripts/mdx && node ./update-content-sha.mjs
+        run: ./scripts/mdx/update-content-sha.mjs
         env:
           COMMIT_SHA: ${{ github.sha }}
           API_URL: ${{ secrets.API_URL }}
-          POST_API_KEY: ${{ secrets.POST_API_KEY }}
+          API_KEY: ${{ secrets.API_KEY }}

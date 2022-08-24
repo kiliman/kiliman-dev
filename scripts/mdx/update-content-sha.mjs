@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import fetch from 'node-fetch'
 
 const commit = process.env.COMMIT_SHA
@@ -34,7 +32,7 @@ async function go() {
     method: 'post',
     body: JSON.stringify(buildInfo),
     headers: {
-      authorization: `Bearer ${process.env.POST_API_KEY}`,
+      authorization: `Bearer ${process.env.API_KEY}`,
     },
   })
   if (!response.ok) {

@@ -39,7 +39,7 @@ const index: Record<string, any> = {}
   const options = program.opts()
 
   process.env.API_URL = options.api ?? process.env.API_URL
-  process.env.POST_API_KEY = options.key ?? process.env.POST_API_KEY
+  process.env.API_KEY = options.key ?? process.env.API_KEY
 
   if (!process.env.API_URL) {
     console.error('missing API_URL')
@@ -160,9 +160,8 @@ async function processMdx(
       series = seriesMap.get(seriesRoot)
       if (!series) {
         // series not in local map, so get it from the API
-        const response = await fetch(
-          `${process.env.API_URL}/get-content/${seriesRoot}/series`,
-        )
+        const url = `${process.env.API_URL}/get-content/${seriesRoot}/series`
+        const response = await fetch(url)
         if (response.ok) {
           series = await response.json()
           seriesMap.set(seriesRoot, series)
@@ -282,7 +281,7 @@ async function postContent(
       code: hasCode ? code : undefined,
     }),
     headers: {
-      authorization: `Bearer ${process.env.POST_API_KEY}`,
+      authorization: `Bearer ${process.env.API_KEY}`,
     },
   })
   return [response, hash]
@@ -382,14 +381,14 @@ async function generateIndex() {
       method: 'post',
       body: JSON.stringify(posts),
       headers: {
-        authorization: `Bearer ${process.env.POST_API_KEY}`,
+        authorization: `Bearer ${process.env.API_KEY}`,
       },
     }),
     fetch(`${process.env.API_URL}/update-series`, {
       method: 'post',
       body: JSON.stringify(series),
       headers: {
-        authorization: `Bearer ${process.env.POST_API_KEY}`,
+        authorization: `Bearer ${process.env.API_KEY}`,
       },
     }),
   ])

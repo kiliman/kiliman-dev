@@ -1,11 +1,11 @@
-import { ActionFunction, json } from "@remix-run/cloudflare";
+import { ActionFunction, json } from '@remix-run/cloudflare'
 declare var CONTENT: KVNamespace
-declare var POST_API_KEY: string
+declare var API_KEY: string
 
 export const action: ActionFunction = async ({ request }) => {
   try {
     const key = request.headers.get('Authorization')
-    if (key !== `Bearer ${POST_API_KEY}`) {
+    if (key !== `Bearer ${API_KEY}`) {
       return new Response(`Unauthorized ${key}`, { status: 401 })
     }
     const data = await request.json()
