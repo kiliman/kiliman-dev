@@ -1,3 +1,6 @@
 {
-  "extends": ["@remix-run/eslint-config"]
+  "extends": ["@remix-run/eslint-config"],
+  "env": {
+    "node": true
+  }
 }

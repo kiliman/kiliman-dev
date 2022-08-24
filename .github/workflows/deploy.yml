@@ -29,6 +29,8 @@ jobs:
         run: >-
           echo ::set-output name=DEPLOYABLE::$(node ./scripts/is-deployable.js ${{
           github.sha }})
+        env:
+          API_URL: ${{ secrets.API_URL }}
 
       - name: ❓ Deployable
         run: >-

@@ -58,7 +58,7 @@ const index: Record<string, any> = {}
     if (mdxPath.startsWith('/')) {
       mdxPath = mdxPath.substring(rootPath.length + 1)
     }
-    await processMdx(mdxPath)
+    await processMdx(mdxPath, { postContentToServer: true, outputLog: true })
   }
   // update any series data
   await updateSeries()
@@ -73,7 +73,7 @@ const index: Record<string, any> = {}
 
 async function processMdx(
   mdxPath: string,
-  postContentToServer: boolean = true,
+  options: { postContentToServer: boolean; outputLog: boolean },
 ) {
   let originalPath = mdxPath
   try {
@@ -85,7 +85,10 @@ async function processMdx(
     }
     if (!mdxPath) return
 
-    console.error(`Compiling ${mdxPath}...`)
+    if (options.outputLog) {
+      console.error(`Compiling ${mdxPath}...`)
+    }
+
     let fullPath = path.join(rootPath, mdxPath)
 
     const parts = mdxPath.split('/')
@@ -218,7 +221,8 @@ async function processMdx(
       ...frontmatter,
     }
 
-    if (postContentToServer) {
+    if (options.postContentToServer) {
+      console.error('Posting to server...')
       const [response, hash] = await postContent(
         slug,
         frontmatter,
@@ -345,11 +349,12 @@ function getAllContentFiles(parentDir: string) {
 }
 
 async function generateIndex() {
+  console.error('Generating index...')
   mdxPaths = getAllContentFiles(path.join(rootPath, 'content/blog'))
   while (mdxPaths.length) {
     let mdxPath = mdxPaths[0].substring(rootPath.length + 1)
     // process any files that are not yet processed but don't post to server
-    await processMdx(mdxPath, false)
+    await processMdx(mdxPath, { postContentToServer: true, outputLog: true })
   }
   // sort index by published date
   const posts = Object.values(index).filter(
@@ -381,6 +386,7 @@ async function generateIndex() {
     return diff === 0 ? (a.title < b.title ? -1 : 1) : diff
   })
 
+  console.error('Writing index...')
   const responses = await Promise.all([
     fetch(`${process.env.API_URL}/update-index`, {
       method: 'post',

@@ -1,10 +1,12 @@
 // try to keep this dep-free so we don't have to install deps
 const execSync = require('child_process').execSync
 const https = require('https')
+const http = require('http')
 
 function fetchJson(url) {
+  const server = url.startsWith('https://') ? https : http
   return new Promise((resolve, reject) => {
-    https
+    server
       .get(url, res => {
         let data = ''
         res.on('data', d => {

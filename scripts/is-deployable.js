@@ -1,8 +1,8 @@
 // try to keep this dep-free so we don't have to install deps
 const { getChangedFiles, fetchJson } = require('./get-changed-files')
-const [currentCommitSha] = process.argv.slice(2)
+let currentCommitSha = process.argv.slice(2)?.[0] ?? ['HEAD']
 async function go() {
-  const buildInfo = await fetchJson('https://kiliman.dev/build/info.json')
+  const buildInfo = await fetchJson(`${process.env.API_URL}/get-deploy-sha`)
   const compareCommitSha = buildInfo.commit.sha
   const changedFiles = await getChangedFiles(currentCommitSha, compareCommitSha)
   console.error('Determining whether the changed files are deployable', {
