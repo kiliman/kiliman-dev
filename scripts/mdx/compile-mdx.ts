@@ -23,6 +23,9 @@ const processed: Record<string, boolean> = {}
 const seriesMap = new Map()
 const index: Record<string, any> = {}
 
+let API_URL: string = ''
+let API_KEY: string = ''
+
 ;(async function () {
   config()
   initEsbuild()
@@ -38,10 +41,10 @@ const index: Record<string, any> = {}
   program.parse(process.argv)
   const options = program.opts()
 
-  process.env.API_URL = options.api ?? process.env.API_URL
-  process.env.API_KEY = options.key ?? process.env.API_KEY
+  API_URL = options.api ?? process.env.API_URL
+  API_KEY = options.key ?? process.env.API_KEY
 
-  if (!process.env.API_URL) {
+  if (!API_URL) {
     console.error('missing API_URL')
     process.exit(1)
   }
@@ -167,7 +170,7 @@ async function processMdx(
       series = seriesMap.get(seriesRoot)
       if (!series) {
         // series not in local map, so get it from the API
-        const url = `${process.env.API_URL}/get-content/${seriesRoot}/series`
+        const url = `${API_URL}/get-content/${seriesRoot}/series`
         const response = await fetch(url)
         if (response.ok) {
           series = await response.json()
@@ -271,7 +274,7 @@ async function postContent(
 
   const hasCode =
     (files && Object.keys(files).length > 0) || /<code/g.test(html)
-  const response = await fetch(`${process.env.API_URL}/post-content`, {
+  const response = await fetch(`${API_URL}/post-content`, {
     method: 'post',
     body: JSON.stringify({
       slug,
@@ -289,7 +292,7 @@ async function postContent(
       code: hasCode ? code : undefined,
     }),
     headers: {
-      authorization: `Bearer ${process.env.API_KEY}`,
+      authorization: `Bearer ${API_KEY}`,
     },
   })
   const json = await response.json()
@@ -390,18 +393,18 @@ async function generateIndex() {
 
   console.error('Writing index...')
   const responses = await Promise.all([
-    fetch(`${process.env.API_URL}/update-index`, {
+    fetch(`${API_URL}/update-index`, {
       method: 'post',
       body: JSON.stringify(posts),
       headers: {
-        authorization: `Bearer ${process.env.API_KEY}`,
+        authorization: `Bearer ${API_KEY}`,
       },
     }),
-    fetch(`${process.env.API_URL}/update-series`, {
+    fetch(`${API_URL}/update-series`, {
       method: 'post',
       body: JSON.stringify(series),
       headers: {
-        authorization: `Bearer ${process.env.API_KEY}`,
+        authorization: `Bearer ${API_KEY}`,
       },
     }),
   ])
