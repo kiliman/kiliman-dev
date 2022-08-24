@@ -44,6 +44,9 @@ let API_KEY: string = ''
   API_URL = options.api ?? process.env.API_URL
   API_KEY = options.key ?? process.env.API_KEY
 
+  console.error('Compiling content')
+  console.error('API_URL=', API_URL)
+  console.error('API_KEY=', API_URL)
   if (!API_URL) {
     console.error('missing API_URL')
     process.exit(1)
@@ -225,7 +228,7 @@ async function processMdx(
     }
 
     if (options.postContentToServer) {
-      console.error('Posting to server...')
+      console.error(`Posting to server ${API_URL}...`)
       const [response, hash] = await postContent(
         slug,
         frontmatter,
