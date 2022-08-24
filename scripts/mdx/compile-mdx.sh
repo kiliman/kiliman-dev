@@ -1,3 +1,6 @@
 #!/bin/bash
 SCRIPT_DIR=$(dirname "$0")
-node -r esbuild-runner/register "$SCRIPT_DIR/compile-mdx.ts" --json --file $*
+ROOT_DIR=$(pwd)
+pushd "$SCRIPT_DIR" /dev/null 2>&1
+node -r esbuild-runner/register compile-mdx.ts --root "$ROOT_DIR" --json --file $*
+popd /dev/null 2>&1

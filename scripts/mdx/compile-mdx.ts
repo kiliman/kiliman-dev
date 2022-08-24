@@ -54,7 +54,10 @@ const index: Record<string, any> = {}
   }
   // process files until empty
   while (mdxPaths.length) {
-    let mdxPath = path.relative(rootPath, mdxPaths[0])
+    let mdxPath = mdxPaths[0]
+    if (mdxPath.startsWith('/')) {
+      mdxPath = mdxPath.substring(rootPath.length + 1)
+    }
     await processMdx(mdxPath)
   }
   // update any series data
@@ -80,6 +83,7 @@ async function processMdx(
     if (mdxPath.endsWith('/index.mdx')) {
       mdxPath = mdxPath.replace('/index.mdx', '')
     }
+    if (!mdxPath) return
 
     console.error(`Compiling ${mdxPath}...`)
     let fullPath = path.join(rootPath, mdxPath)
@@ -343,7 +347,7 @@ function getAllContentFiles(parentDir: string) {
 async function generateIndex() {
   mdxPaths = getAllContentFiles(path.join(rootPath, 'content/blog'))
   while (mdxPaths.length) {
-    let mdxPath = path.relative(rootPath, mdxPaths[0])
+    let mdxPath = mdxPaths[0].substring(rootPath.length + 1)
     // process any files that are not yet processed but don't post to server
     await processMdx(mdxPath, false)
   }
