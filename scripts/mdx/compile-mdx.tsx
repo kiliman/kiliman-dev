@@ -12,7 +12,7 @@ import * as path from 'path'
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import theme from 'shiki/themes/material-default.json'
-
+let v = React.version
 type Frontmatter = { [key: string]: any }
 
 let rootPath: string
@@ -124,12 +124,12 @@ async function processMdx(
       ? path.resolve(process.cwd(), path.join(rootPath, mdxPath))
       : undefined
 
-    const { frontmatter, code } = await bundleMDX({
+    let { frontmatter, code } = await bundleMDX({
       source: mdxSource,
       files,
       // set cwd if mdx has file imports
       cwd,
-      xdmOptions(options) {
+      mdxOptions(options) {
         options.remarkPlugins = [
           ...(options.remarkPlugins ?? []),
           [
@@ -147,9 +147,9 @@ async function processMdx(
     })
 
     const Component = getMDXComponent(code)
-    const html = renderToString(
-      React.createElement(Component, { theme, components: { CH } }),
-    )
+    // strip theme from code
+    code = code.replace(/theme:(.*)autoImport/g, 'theme:{},autoImport')
+    const html = renderToString(<Component theme={theme} components={{ CH }} />)
 
     let seriesRoot: string
     let series = undefined

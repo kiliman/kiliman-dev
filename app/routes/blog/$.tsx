@@ -1,17 +1,16 @@
 import { CH } from '@code-hike/mdx/components'
 import { CalendarIcon } from '@heroicons/react/24/outline'
-import theme from 'shiki/themes/material-default.json'
-
-import {
+import type {
   HeadersFunction,
-  json,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/cloudflare'
+import { json } from '@remix-run/cloudflare'
 import { Link, useLoaderData } from '@remix-run/react'
 import clsx from 'clsx'
 import { useEffect } from 'react'
 import { hydrate } from 'react-dom'
+import theme from 'shiki/themes/material-default.json'
 import HeroImage from '~/components/HeroImage'
 import Tag from '~/components/Tag'
 import { siteTitle } from '~/utils/constants'
