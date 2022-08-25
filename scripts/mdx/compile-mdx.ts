@@ -45,8 +45,6 @@ let API_KEY: string = ''
   API_KEY = options.key ?? process.env.API_KEY
 
   console.error('Compiling content')
-  console.error('API_URL=', API_URL)
-  console.error('API_KEY=', API_URL)
   if (!API_URL) {
     console.error('missing API_URL')
     process.exit(1)
@@ -134,7 +132,15 @@ async function processMdx(
       xdmOptions(options) {
         options.remarkPlugins = [
           ...(options.remarkPlugins ?? []),
-          [remarkCodeHike, { showCopyButton: true, theme, autoImport: false }],
+          [
+            remarkCodeHike,
+            {
+              showCopyButton: true,
+              theme,
+              autoImport: false,
+              staticMediaQuery: 'not screen, (max-width: 1024px)',
+            },
+          ],
         ]
         return options
       },
@@ -228,7 +234,6 @@ async function processMdx(
     }
 
     if (options.postContentToServer) {
-      console.error(`Posting to server ${API_URL}...`)
       const [response, hash] = await postContent(
         slug,
         frontmatter,
@@ -237,7 +242,7 @@ async function processMdx(
         files,
         series,
       )
-      if (!response.ok) {
+      if (response.status !== 200) {
         const body = await response.text()
         results[originalPath] = {
           status: response.status,
@@ -298,8 +303,6 @@ async function postContent(
       authorization: `Bearer ${API_KEY}`,
     },
   })
-  const json = await response.json()
-  console.error(json)
   return [response, hash]
 }
 async function updateSeries() {
