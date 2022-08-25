@@ -36,7 +36,7 @@ export default function Index() {
     <div className="container flex flex-col gap-4 m-auto md:flex-row">
       <div className="basis-2/3">
         <h1 className="text-3xl font-bold">Blog Posts</h1>
-        <ul className="mt-6 flex flex-col w-full gap-y-4 sm:gap-y-8 gap-x-4">
+        <ul className="mt-6 flex flex-col w-full gap-y-4 sm:gap-y-6 gap-x-4">
           {posts.map((post: any) => (
             <ListItem key={post.slug}>
               <div className="flex">
@@ -89,11 +89,11 @@ export default function Index() {
       </div>
       <div className="basis-1/3">
         <h1 className="text-3xl font-bold">Blog Series</h1>
-        <ul className="mt-6">
+        <ul className="flex flex-col mt-6 gap-y-4 sm:gap-y-6 gap-x-4">
           {series.map(({ slug, ...frontmatter }: any) => (
             <ListItem key={slug}>
-              <Link to={`/${slug}`}>
-                <div className="flex">
+              <div className="flex">
+                <Link to={`/${slug}`}>
                   {frontmatter.image ? (
                     <img
                       className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4"
@@ -106,15 +106,16 @@ export default function Index() {
                   ) : (
                     <Logo className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4" />
                   )}
-
-                  <div>
+                </Link>
+                <div>
+                  <Link to={`/${slug}`}>
                     <div>{frontmatter.title}</div>
-                    <p className="mt-1 text-sm text-slate-300 line-clamp-2">
-                      {frontmatter.description}
-                    </p>
-                  </div>
+                  </Link>
+                  <p className="mt-1 text-sm text-slate-300 line-clamp-2">
+                    {frontmatter.description}
+                  </p>
                 </div>
-              </Link>
+              </div>
             </ListItem>
           ))}
         </ul>

@@ -32,7 +32,7 @@ export default function Index() {
   return (
     <div className="container flex flex-col gap-4 m-auto">
       <h1 className="text-3xl font-bold">Latest Blog Posts</h1>
-      <ul className="mt-6 flex flex-col sm:flex-row flex-wrap w-full gap-y-4 sm:gap-y-8 gap-x-4">
+      <ul className="mt-6 flex flex-col sm:flex-row flex-wrap w-full gap-y-4 sm:gap-y-6 gap-x-4">
         {posts.map((post: any) => (
           <li
             key={post.slug}
@@ -85,6 +85,9 @@ export default function Index() {
           </li>
         ))}
       </ul>
+      <Link className="underline" to="/blog/">
+        More blog posts
+      </Link>
     </div>
   )
 }
