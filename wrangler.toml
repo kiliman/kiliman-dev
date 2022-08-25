@@ -1,5 +1,4 @@
 name = "kiliman-dev"
-type = "javascript"
 main = "./build/index.js"
 
 compatibility_date = "2022-04-05"
