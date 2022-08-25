@@ -132,8 +132,8 @@ export default function Post() {
         </h1>
         <div className="flex justify-between mb-6 items-bottom">
           <div className="flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5 text-slate-200" />
-            <div>{date}</div>
+            <CalendarIcon className="w-5 h-5 text-slate-400" />
+            <div className="text-slate-400">{date}</div>
           </div>
           {frontmatter?.tags && (
             <div className="flex items-center gap-2">

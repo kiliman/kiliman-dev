@@ -38,28 +38,30 @@ export default function Index() {
             key={post.slug}
             className="mb-4 flex-1 sm:w-[45%] sm:min-w-[45%] md:w-[30%] md:min-w-[30%]"
           >
-            <div className="flex">
+            <div className="flex flex-col border border-slate-800 rounded overflow-hidden">
               <Link to={`/${post.slug}`}>
                 {post.image ? (
                   <img
-                    className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4"
+                    className="min-h-[192px] h-48 w-full object-cover"
                     src={post.image.url.replace(
                       /public$/,
-                      'width=256,height=256,fit=crop,gravity=0.5x0.5',
+                      'width=512,height=256,fit=cover,gravity=0.5x0.5',
                     )}
                     alt={post.title}
                   />
                 ) : (
-                  <Logo className="min-w-[64px] min-[64px] h-16 w-16 rounded mr-4" />
+                  <div className="h-48 w-full bg-slate-800 flex items-center justify-center">
+                    <Logo className="w-48 rounded mr-4" />
+                  </div>
                 )}
               </Link>
-              <div>
+              <div className="p-4">
                 <Link to={`/${post.slug}`}>
                   <div>{post.title}</div>
                 </Link>
                 <div className="flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4 text-slate-200" />
-                  <div className="text-sm text-slate-200">
+                  <CalendarIcon className="w-4 h-4 text-slate-400" />
+                  <div className="text-sm text-slate-400">
                     {post.published && post.published !== 'draft'
                       ? new Intl.DateTimeFormat('en-us', {
                           timeZone: 'UTC',
@@ -68,7 +70,7 @@ export default function Index() {
                       : 'Draft'}
                   </div>
                 </div>
-                <p className="mt-1 text-sm text-slate-300 line-clamp-2">
+                <p className="mt-2 text-sm text-slate-300 line-clamp-2">
                   {post.description}
                 </p>
                 {/* {post.series && (

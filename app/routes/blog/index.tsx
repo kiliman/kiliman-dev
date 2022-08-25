@@ -59,8 +59,8 @@ export default function Index() {
                     <div>{post.title}</div>
                   </Link>
                   <div className="flex items-center gap-2">
-                    <CalendarIcon className="w-4 h-4 text-slate-200" />
-                    <div className="text-sm text-slate-200">
+                    <CalendarIcon className="w-4 h-4 text-slate-400" />
+                    <div className="text-sm text-slate-400">
                       {post.published && post.published !== 'draft'
                         ? new Intl.DateTimeFormat('en-us', {
                             timeZone: 'UTC',
@@ -69,7 +69,7 @@ export default function Index() {
                         : 'Draft'}
                     </div>
                   </div>
-                  <p className="mt-1 text-sm text-slate-300 line-clamp-2">
+                  <p className="mt-2 text-sm text-slate-300 line-clamp-2">
                     {post.description}
                   </p>
                   {/* {post.series && (
