@@ -1,5 +1,5 @@
 import { CH } from '@code-hike/mdx/components'
-import { CalendarIcon } from '@heroicons/react/outline'
+import { CalendarIcon } from '@heroicons/react/24/outline'
 import theme from 'shiki/themes/material-default.json'
 
 import {
