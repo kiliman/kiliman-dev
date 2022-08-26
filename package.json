@@ -5,7 +5,7 @@
   "license": "",
   "main": "build/index.js",
   "scripts": {
-    "postinstall": "remix setup cloudflare-workers",
+    "postinstall": "patch-package",
     "clean": "rm -rf dist build public/build",
     "build": "npm run clean && cross-env NODE_ENV=production run-p build:*",
     "build:css": "tailwindcss -i styles/tailwind.css -o app/styles/tailwind.css --minify",

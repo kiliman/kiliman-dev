@@ -1,0 +1,31 @@
+diff --git a/node_modules/@code-hike/mdx/dist/components.esm.mjs b/node_modules/@code-hike/mdx/dist/components.esm.mjs
+index 6578363..a4538e6 100644
+--- a/node_modules/@code-hike/mdx/dist/components.esm.mjs
++++ b/node_modules/@code-hike/mdx/dist/components.esm.mjs
+@@ -6389,13 +6389,14 @@ function InnerPreviewSlot({ previewStep, allProps, editorStep, }) {
+ const StaticStepContext = React.createContext(null);
+ 
+ function Scrollycoding(props) {
+-    return (React.createElement(Swap, { match: [
+-            [
+-                props.codeConfig.staticMediaQuery,
+-                React.createElement(StaticScrollycoding, Object.assign({}, props)),
+-            ],
+-            ["default", React.createElement(DynamicScrollycoding, Object.assign({}, props))],
+-        ] }));
++    const [component, setComponent] = React.useState('dynamic');
++    React.useEffect(() => {
++        if (window.matchMedia(props.codeConfig.staticMediaQuery).matches) {
++            setComponent('static')
++        }
++    }, [])
++
++    return React.createElement(component === 'static' ? StaticScrollycoding : DynamicScrollycoding, Object.assign({}, props))
+ }
+ function StaticScrollycoding(_a) {
+     var { children, hasPreviewSteps, editorSteps } = _a, rest = __rest(_a, ["children", "hasPreviewSteps", "editorSteps"]);
+@@ -6622,3 +6623,4 @@ const internal = {
+ };
+ 
+ export { Annotation, CH, Code, CodeSlot, InlineCode, Preview, PreviewSlot, Scrollycoding, Section, SectionCode, SectionLink, Slideshow, Spotlight, annotationsMap as annotations, internal };
++
