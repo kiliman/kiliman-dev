@@ -1,11 +1,15 @@
-import { CalendarIcon } from '@heroicons/react/24/outline'
+import {
+  CalendarIcon,
+  DocumentDuplicateIcon,
+} from '@heroicons/react/24/outline'
 import {
   HeadersFunction,
   json,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/cloudflare'
-import { Link as RemixLink, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
+import { Link } from '~/components/Link'
 import Logo from '~/components/Logo'
 import { siteTitle } from '~/utils/constants'
 declare var CONTENT: KVNamespace
@@ -38,7 +42,7 @@ export default function Index() {
             key={post.slug}
             className="mb-4 flex-1 sm:w-[45%] sm:min-w-[45%] md:w-[30%] md:min-w-[30%]"
           >
-            <div className="flex flex-col border border-slate-800 rounded overflow-hidden">
+            <div className="flex flex-col border border-slate-800 rounded overflow-hidden h-full">
               <Link to={`/${post.slug}`}>
                 {post.image ? (
                   <img
@@ -55,7 +59,7 @@ export default function Index() {
                   </div>
                 )}
               </Link>
-              <div className="p-4">
+              <div className="p-4 flex-1">
                 <Link to={`/${post.slug}`}>
                   <div>{post.title}</div>
                 </Link>
@@ -73,15 +77,24 @@ export default function Index() {
                 <p className="mt-2 text-sm text-slate-300 line-clamp-2">
                   {post.description}
                 </p>
-                {/* {post.series && (
-                    <p className="mt-2">
-                      Series{' '}
-                      <Link to={`/${post.series.slug}`}>
-                        {post.series.title}
-                      </Link>{' '}
-                      (Post #{post.series.sequence} of {post.series.count})
-                    </p>
-                  )} */}
+                {post.series && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <DocumentDuplicateIcon className="w-4 h-4 text-slate-400" />
+                    <div className="text-sm text-slate-200">
+                      <Link
+                        size="text-sm"
+                        color="text-slate-300"
+                        to={`/${post.series.slug}`}
+                      >
+                        Series{' '}
+                        <span className="inline-block underline decoration-dashed hover:decoration-solid">
+                          {post.series.title}
+                        </span>{' '}
+                        (Post #{post.series.sequence} of {post.series.count})
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </li>
@@ -96,13 +109,6 @@ export default function Index() {
 
 function ListItem({ children, className }: any) {
   return <li className={`mb-4 ${className}`}>{children}</li>
-}
-function Link({ to, children }: any) {
-  return (
-    <RemixLink to={to} className="text-lg text-white hover:underline">
-      {children}
-    </RemixLink>
-  )
 }
 
 function getSeriesPostNumber(posts: string[], slug: string) {

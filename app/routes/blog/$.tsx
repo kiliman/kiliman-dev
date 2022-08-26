@@ -117,7 +117,11 @@ export default function Post() {
   useEffect(() => {
     if (Component) {
       hydrate(
-        <Component theme={theme} components={{ CH }} />,
+        <Component
+          theme={theme}
+          components={{ CH }}
+          suppressHydrationWarning={true}
+        />,
         document.getElementById('post') as HTMLElement,
       )
     }
@@ -152,21 +156,9 @@ export default function Post() {
           className="prose dark:prose-invert prose-slate max-w-none"
           suppressHydrationWarning={true}
           dangerouslySetInnerHTML={{
-            __html: html, //.replace(/opacity:0/g, 'opacity:1'),
+            __html: html,
           }}
         />
-        {/* {Component ? (
-          <main className="prose dark:prose-invert prose-slate">
-            <Component theme={theme} components={{ CH }} />
-          </main>
-        ) : (
-          <main
-            className="prose dark:prose-invert prose-slate"
-            dangerouslySetInnerHTML={{
-              __html: html.replace(/opacity:0/g, 'opacity:1'),
-            }}
-          />
-        )} */}
         {slug?.endsWith('/series') && <SeriesIndex series={data} slug={slug} />}
       </div>
     </>

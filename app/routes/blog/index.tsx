@@ -1,11 +1,15 @@
-import { CalendarIcon } from '@heroicons/react/24/outline'
 import {
+  CalendarIcon,
+  DocumentDuplicateIcon,
+} from '@heroicons/react/24/outline'
+import type {
   HeadersFunction,
-  json,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/cloudflare'
-import { Link as RemixLink, useLoaderData } from '@remix-run/react'
+import { json } from '@remix-run/cloudflare'
+import { useLoaderData } from '@remix-run/react'
+import { Link } from '~/components/Link'
 import Logo from '~/components/Logo'
 import { siteTitle } from '~/utils/constants'
 declare var CONTENT: KVNamespace
@@ -41,19 +45,22 @@ export default function Index() {
             <ListItem key={post.slug}>
               <div className="flex">
                 <Link to={`/${post.slug}`}>
-                  {post.image ? (
-                    <img
-                      className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4"
-                      src={post.image.url.replace(
-                        /public$/,
-                        'width=256,height=256,fit=crop,gravity=0.5x0.5',
-                      )}
-                      alt={post.title}
-                    />
-                  ) : (
-                    <Logo className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4" />
-                  )}
+                  <div className="mt-1.5">
+                    {post.image ? (
+                      <img
+                        className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4"
+                        src={post.image.url.replace(
+                          /public$/,
+                          'width=256,height=256,fit=crop,gravity=0.5x0.5',
+                        )}
+                        alt={post.title}
+                      />
+                    ) : (
+                      <Logo className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4" />
+                    )}
+                  </div>
                 </Link>
+
                 <div>
                   <Link to={`/${post.slug}`}>
                     <div>{post.title}</div>
@@ -72,15 +79,24 @@ export default function Index() {
                   <p className="mt-2 text-sm text-slate-300 line-clamp-2">
                     {post.description}
                   </p>
-                  {/* {post.series && (
-                    <p className="mt-2">
-                      Series{' '}
-                      <Link to={`/${post.series.slug}`}>
-                        {post.series.title}
-                      </Link>{' '}
-                      (Post #{post.series.sequence} of {post.series.count})
-                    </p>
-                  )} */}
+                  {post.series && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <DocumentDuplicateIcon className="w-4 h-4 text-slate-400" />
+                      <div className="text-sm text-slate-200">
+                        <Link
+                          size="text-sm"
+                          color="text-slate-300"
+                          to={`/${post.series.slug}`}
+                        >
+                          Series{' '}
+                          <span className="inline-block underline decoration-dashed hover:decoration-solid">
+                            {post.series.title}
+                          </span>{' '}
+                          (Post #{post.series.sequence} of {post.series.count})
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </ListItem>
@@ -94,18 +110,20 @@ export default function Index() {
             <ListItem key={slug}>
               <div className="flex">
                 <Link to={`/${slug}`}>
-                  {frontmatter.image ? (
-                    <img
-                      className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4"
-                      src={frontmatter.image?.url.replace(
-                        /public$/,
-                        'width=256,height=256,fit=crop,gravity=0.5x0.5',
-                      )}
-                      alt={frontmatter.title}
-                    />
-                  ) : (
-                    <Logo className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4" />
-                  )}
+                  <div className="mt-1.5">
+                    {frontmatter.image ? (
+                      <img
+                        className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4"
+                        src={frontmatter.image?.url.replace(
+                          /public$/,
+                          'width=256,height=256,fit=crop,gravity=0.5x0.5',
+                        )}
+                        alt={frontmatter.title}
+                      />
+                    ) : (
+                      <Logo className="min-w-[64px] min-h-[64px] h-16 w-16 rounded mr-4" />
+                    )}
+                  </div>
                 </Link>
                 <div>
                   <Link to={`/${slug}`}>
@@ -126,13 +144,6 @@ export default function Index() {
 
 function ListItem({ children }: any) {
   return <li className="mb-4">{children}</li>
-}
-function Link({ to, children }: any) {
-  return (
-    <RemixLink to={to} className="text-lg text-white hover:underline">
-      {children}
-    </RemixLink>
-  )
 }
 
 function getSeriesPostNumber(posts: string[], slug: string) {
