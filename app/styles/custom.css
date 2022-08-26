@@ -22,3 +22,6 @@
   border-right-color: #334155 !important;
   border-bottom-color: #334155 !important;
 }
+.ch-scrollycoding-step-content[data-selected] {
+  border-color: #64748b;
+}
