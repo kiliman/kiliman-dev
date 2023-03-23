@@ -159,8 +159,8 @@ async function processMdx(
       // series index
       if (parts[parts.length - 1] === 'series.mdx') {
         // this is a series so save in map
-        frontmatter.postInfo = {} // reset post info (will be populated by posts)
         seriesMap.set(seriesRoot, { slug, frontmatter, html, code, files })
+        frontmatter.postInfo = {} // reset post info (will be populated by posts)
         Array.from(frontmatter.posts as string[]).forEach(post => {
           let postPath = path.join('content', seriesRoot, post)
           const fullPath = path.join(rootPath, postPath)
@@ -173,35 +173,41 @@ async function processMdx(
           }
         })
         // series will be posted after all posts are processed
+        mdxPaths.splice(0, 1)
+        mdxPaths.push(mdxPath)
         return
       }
       // this is a blog post in a series
       series = seriesMap.get(seriesRoot)
       if (!series) {
-        // series not in local map, so get it from the API
-        const url = `${API_URL}/get-content/${seriesRoot}/series`
-        const response = await fetch(url)
-        if (response.ok) {
-          series = await response.json()
-          seriesMap.set(seriesRoot, series)
-          // once a new series is fetched, re-process all posts in the series
-          Array.from(series.frontmatter.posts as string[]).forEach(post => {
-            let postPath = path.join('content', seriesRoot, post)
-            const fullPath = path.join(rootPath, postPath)
-            const exists = fs.existsSync(fullPath)
-            if (!exists) {
-              postPath += '.mdx'
-            }
-            if (!mdxPaths.includes(postPath)) {
-              mdxPaths.push(postPath)
-            }
-          })
-        } else {
-          console.error('ERROR', response.statusText)
-          // series not found, so reprocess this file after the series is created
-          return
-        }
+        
       }
+      // if (!series) {
+      //   // series not in local map, so get it from the API
+      //   const url = `${API_URL}/get-content/${seriesRoot}/series`
+      //   const response = await fetch(url)
+      //   if (response.ok) {
+      //     series = await response.json()
+      //     seriesMap.set(seriesRoot, series)
+      //     // once a new series is fetched, re-process all posts in the series
+      //     Array.from(series.frontmatter.posts as string[]).forEach(post => {
+      //       let postPath = path.join('content', seriesRoot, post)
+      //       const fullPath = path.join(rootPath, postPath)
+      //       const exists = fs.existsSync(fullPath)
+      //       if (!exists) {
+      //         postPath += '.mdx'
+      //       }
+      //       if (!mdxPaths.includes(postPath)) {
+      //         mdxPaths.push(postPath)
+      //       }
+      //     })
+      //   } else {
+      //     console.error('ERROR', response.statusText)
+      //     // series not found, so reprocess this file after the series is created
+
+      //     return
+      //   }
+      // }
       // update post frontmatter with series info
       const seriesPosts = series.frontmatter.posts.map(
         (post: string) => `${seriesRoot}/${post}`,
@@ -217,14 +223,16 @@ async function processMdx(
       // get last segment of slug
       const postSlug = parts[parts.length - 1].replace('.mdx', '')
       // add post info to series for series index
-      series.frontmatter.postInfo = {
-        ...series.frontmatter.postInfo,
-        ...{
-          [postSlug]: {
-            title: frontmatter.title,
-            published: frontmatter.published,
+      if (frontmatter.published && frontmatter.published !== 'draft') {
+        series.frontmatter.postInfo = {
+          ...series.frontmatter.postInfo,
+          ...{
+            [postSlug]: {
+              title: frontmatter.title,
+              published: frontmatter.published,
+            },
           },
-        },
+        }
       }
     }
     // update index
@@ -259,10 +267,10 @@ async function processMdx(
       }
     }
   } finally {
-    // remove file from list
-    processed[originalPath] = true
-    mdxPaths.splice(0, 1)
   }
+  // remove file from list
+  processed[originalPath] = true
+  mdxPaths.splice(0, 1)
 }
 
 async function postContent(
@@ -307,6 +315,7 @@ async function postContent(
 }
 async function updateSeries() {
   for (let [seriesRoot, series] of seriesMap.entries()) {
+    console.error('series', series.slug, series.frontmatter)
     const [response, hash] = await postContent(
       series.slug,
       series.frontmatter,
@@ -388,6 +397,12 @@ async function generateIndex() {
     published: series.frontmatter.published,
     count: series.frontmatter.posts.length,
     image: series.frontmatter.image,
+    postInfo: series.frontmatter.postInfo,
+    // postInfo: Object.fromEntries(
+    //   Object.entries(series.frontmatter.postInfo).filter(
+    //     ([_, post]: any) => post.published !== 'draft',
+    //   ),
+    // ),
   }))
   series.sort((a: Frontmatter, b: Frontmatter) => {
     const aDate = new Date(a.updated ?? a.published)
