@@ -5,7 +5,7 @@ const exec = require('util').promisify(require('child_process').exec)
 const cacheFilePath = './content/.cache.json'
 const refreshFilePath = './app/.refresh.ignore'
 let refreshTimeout = undefined
-let force = false
+let force = true
 
 ;(async function () {
   await main()
@@ -79,11 +79,13 @@ function updateCache(cache, path, entry) {
 
 async function doCompile(path) {
   const command = `./scripts/mdx/compile-mdx.sh ${path}`
+  console.log(command)
   let out = await exec(command).catch(e => {
     console.error(e)
+    return {}
   })
   const output = out.stdout
-  return JSON.parse(output)
+  return output ? JSON.parse(output) : {}
 }
 
 function validContentPath(contentPath) {

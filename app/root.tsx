@@ -142,6 +142,14 @@ function Document({
         {title ? <title>{title}</title> : null}
         <Meta />
         <Links />
+        <link
+          rel="manifest"
+          href="https://progressier.app/dFpuCxHMNO40RaVhQ32o/progressier.json"
+        />
+        <script
+          defer
+          src="https://progressier.app/dFpuCxHMNO40RaVhQ32o/script.js"
+        ></script>{' '}
       </head>
       <body className="w-full text-white bg-slate-900">
         {children}

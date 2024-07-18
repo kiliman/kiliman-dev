@@ -17,7 +17,7 @@ declare var CONTENT: KVNamespace
 export const headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders
 
 export const loader: LoaderFunction = async () => {
-  const posts = (await CONTENT.get('blog/$index', 'json')) as any[]
+  const posts = ((await CONTENT.get('blog/$index', 'json')) as any[]) ?? []
   return json(
     { posts: posts.slice(0, 6) },
     {
@@ -36,13 +36,13 @@ export default function Index() {
   return (
     <div className="container flex flex-col gap-4 m-auto">
       <h1 className="text-3xl font-bold">Latest Blog Posts</h1>
-      <ul className="mt-6 flex flex-col sm:flex-row flex-wrap w-full gap-y-4 sm:gap-y-6 gap-x-4">
+      <ul className="flex flex-col flex-wrap w-full mt-6 sm:flex-row gap-y-4 sm:gap-y-6 gap-x-4">
         {posts.map((post: any) => (
           <li
             key={post.slug}
             className="mb-4 flex-1 sm:w-[45%] sm:min-w-[45%] md:w-[30%] md:min-w-[30%]"
           >
-            <div className="flex flex-col border border-slate-800 rounded overflow-hidden h-full">
+            <div className="flex flex-col h-full overflow-hidden border rounded border-slate-800">
               <Link to={`/${post.slug}`}>
                 {post.image ? (
                   <img
@@ -54,12 +54,12 @@ export default function Index() {
                     alt={post.title}
                   />
                 ) : (
-                  <div className="h-48 w-full bg-slate-800 flex items-center justify-center">
-                    <Logo className="w-48 rounded mr-4" />
+                  <div className="flex items-center justify-center w-full h-48 bg-slate-800">
+                    <Logo className="w-48 mr-4 rounded" />
                   </div>
                 )}
               </Link>
-              <div className="p-4 flex-1">
+              <div className="flex-1 p-4">
                 <Link to={`/${post.slug}`}>
                   <div>{post.title}</div>
                 </Link>
@@ -78,7 +78,7 @@ export default function Index() {
                   {post.description}
                 </p>
                 {post.series && (
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="flex items-center gap-2 mt-2">
                     <DocumentDuplicateIcon className="w-4 h-4 text-slate-400" />
                     <div className="text-sm text-slate-200">
                       <Link

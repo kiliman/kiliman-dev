@@ -56,6 +56,7 @@ let API_KEY: string = ''
   if (options.regen) {
     mdxPaths = getAllContentFiles(path.join(rootPath, 'content'))
   }
+  console.log('compiling', mdxPaths)
   // process files until empty
   while (mdxPaths.length) {
     let mdxPath = mdxPaths[0]
@@ -180,34 +181,36 @@ async function processMdx(
       // this is a blog post in a series
       series = seriesMap.get(seriesRoot)
       if (!series) {
-        
-      }
-      // if (!series) {
-      //   // series not in local map, so get it from the API
-      //   const url = `${API_URL}/get-content/${seriesRoot}/series`
-      //   const response = await fetch(url)
-      //   if (response.ok) {
-      //     series = await response.json()
-      //     seriesMap.set(seriesRoot, series)
-      //     // once a new series is fetched, re-process all posts in the series
-      //     Array.from(series.frontmatter.posts as string[]).forEach(post => {
-      //       let postPath = path.join('content', seriesRoot, post)
-      //       const fullPath = path.join(rootPath, postPath)
-      //       const exists = fs.existsSync(fullPath)
-      //       if (!exists) {
-      //         postPath += '.mdx'
-      //       }
-      //       if (!mdxPaths.includes(postPath)) {
-      //         mdxPaths.push(postPath)
-      //       }
-      //     })
-      //   } else {
-      //     console.error('ERROR', response.statusText)
-      //     // series not found, so reprocess this file after the series is created
+        // series not in local map, so get it from the API
+        const url = `${API_URL}/get-content/${seriesRoot}/series`
+        const response = await fetch(url)
+        if (response.ok) {
+          series = await response.json()
+          if (!series) {
+            seriesMap.set(seriesRoot, 'pending')
+            return
+          }
+          seriesMap.set(seriesRoot, series)
+          // once a new series is fetched, re-process all posts in the series
+          Array.from(series.frontmatter.posts as string[]).forEach(post => {
+            let postPath = path.join('content', seriesRoot, post)
+            const fullPath = path.join(rootPath, postPath)
+            const exists = fs.existsSync(fullPath)
+            if (!exists) {
+              postPath += '.mdx'
+            }
+            if (!mdxPaths.includes(postPath)) {
+              mdxPaths.push(postPath)
+            }
+          })
+        } else {
+          console.error('ERROR', response.statusText)
+          // series not found, so reprocess this file after the series is created
 
-      //     return
-      //   }
-      // }
+          return
+        }
+      }
+      if (series === 'pending') return
       // update post frontmatter with series info
       const seriesPosts = series.frontmatter.posts.map(
         (post: string) => `${seriesRoot}/${post}`,
@@ -281,6 +284,7 @@ async function postContent(
   files: Record<string, string> | undefined,
   series: any,
 ): Promise<[Response, string]> {
+  console.log('postContent', slug)
   const hash = crypto
     .createHash('sha256')
     .update(
